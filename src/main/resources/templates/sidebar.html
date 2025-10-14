@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <body>
+    <div th:fragment="sidebar(activeUri)">
+      <div id="sidebar-overlay" class="sidebar-overlay"></div>
+      <nav
+        id="sidebar"
+        class="sidebar d-flex flex-column flex-shrink-0 p-3 text-white bg-dark"
+      >
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <a th:href="@{/}" class="fs-4 text-white text-decoration-none fw-bold"
+            >Mi Market</a
+          >
+          <button id="close-sidebar" class="btn btn-dark d-md-none p-0">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="currentColor"
+              class="bi bi-x-lg"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"
+              />
+            </svg>
+          </button>
+        </div>
+        <hr />
+
+        <ul class="nav nav-pills flex-column mb-auto">
+          <li th:each="opcion : ${session.opcionesIndependientes}">
+            <a
+              th:href="@{${opcion.ruta}}"
+              class="nav-link text-white rounded-lg"
+              th:classappend="${opcion.ruta == activeUri} ? 'active' : ''"
+            >
+              <span th:text="${opcion.nombre}"></span>
+            </a>
+          </li>
+
+          <li
+            class="nav-item"
+            th:each="grupo : ${session.menuAgrupado.entrySet()}"
+          >
+            <th:block
+              th:with="isGroupActive=${grupo.value.?[ruta == #activeUri].size() > 0}"
+            >
+              <a
+                class="nav-link text-white d-flex justify-content-between align-items-center"
+                data-bs-toggle="collapse"
+                th:href="@{'#collapse-' + ${grupo.key}}"
+                th:classappend="${!isGroupActive} ? 'collapsed' : ''"
+                role="button"
+                th:aria-expanded="${isGroupActive}"
+                th:aria-controls="@{'collapse-' + ${grupo.key}}"
+              >
+                <span th:text="${grupo.key}"></span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  class="bi bi-chevron-down"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
+                  />
+                </svg>
+              </a>
+
+              <div
+                th:id="@{'collapse-' + ${grupo.key}}"
+                th:classappend="${isGroupActive} ? 'show' : ''"
+                class="collapse"
+              >
+                <ul class="nav flex-column ps-3">
+                  <li th:each="opcion : ${grupo.value}">
+                    <a
+                      th:href="@{${opcion.ruta}}"
+                      class="nav-link text-white rounded-lg"
+                      th:classappend="${opcion.ruta == activeUri} ? 'active-submenu' : ''"
+                    >
+                      <span th:text="${opcion.nombre}"></span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </th:block>
+          </li>
+        </ul>
+
+        <hr />
+        <div class="d-flex flex-column">
+          <ul class="nav nav-pills flex-column">
+            <li>
+              <a th:href="@{/catalogo}" class="nav-link text-white rounded-lg"
+                >Catálogo</a
+              >
+            </li>
+            <li>
+              <a th:href="@{/logout}" class="nav-link text-white rounded-lg"
+                >Cerrar Sesión</a
+              >
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+  </body>
+</html>
