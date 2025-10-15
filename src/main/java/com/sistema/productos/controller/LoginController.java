@@ -56,38 +56,23 @@ public class LoginController {
 
         if (usuarioService.verificarContrasena(clave, usuarioEncontrado.getClave())) {
             session.setAttribute("usuarioLogueado", usuarioEncontrado);
-
-            // --- LÓGICA MODIFICADA PARA AGRUPAR EL MENÚ ---
-
-            // 1. Obtenemos y ordenamos las opciones como antes
             List<Opcion> opcionesMenu = usuarioEncontrado.getRol().getOpciones().stream().sorted(Comparator.comparing(Opcion::getId))
                     .collect(Collectors.toList());
             Map<String, List<Opcion>> menuAgrupado = new LinkedHashMap<>();
-            
-            // 3. Creamos una lista para las opciones que no se agrupan (ej. Dashboard)
             List<Opcion> opcionesIndependientes = new ArrayList<>();
-
-            // 4. Iteramos y clasificamos cada opción
             for (Opcion opcion : opcionesMenu) {
                 String[] partesRuta = opcion.getRuta().split("/");
-                // Si la ruta tiene un formato como /grupo/accion (ej. /productos/listar)
                 if (partesRuta.length > 2) {
                     String grupo = partesRuta[1];
-                    // Capitalizamos el nombre del grupo para mostrarlo (ej. "productos" -> "Productos")
                     String nombreGrupo = grupo.substring(0, 1).toUpperCase() + grupo.substring(1);
-                    
-                    // Agregamos la opción al mapa. Si el grupo no existe, se crea una nueva lista.
                     menuAgrupado.computeIfAbsent(nombreGrupo, k -> new ArrayList<>()).add(opcion);
                 } else {
-                    // Si no, es una opción independiente (ej. / o /dashboard)
                     opcionesIndependientes.add(opcion);
                 }
             }
             
-            // 5. Guardamos las estructuras en la sesión para que Thymeleaf las use
             session.setAttribute("menuAgrupado", menuAgrupado);
             session.setAttribute("opcionesIndependientes", opcionesIndependientes);
-            // Guardamos también la lista plana por si se necesita para otras validaciones
             session.setAttribute("menuOpciones", opcionesMenu);
 
             return "redirect:/";

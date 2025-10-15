@@ -63,7 +63,7 @@ tipodoc_estado int not null default 1
 );
 
 -- Volcado de Datos tipo_documento
-INSERT INTO `tipo_documento` (`id_tipodocumento`, `tipodoc_nombre`, `tipodoc_tamano`, `tipodoc_estado`) VALUES
+INSERT INTO `tipo_documento` (`id_tipodocumento`, `tipodoc_nombre`, `tipodoc_estado`) VALUES
 (1, 'DNI',1),
 (2, 'RUC', 1),
 (3, 'Carné de Extranjería', 1);
@@ -119,7 +119,7 @@ constraint `FK_Opcion` foreign key (`id_opcion`) references `opcion`(`id_opcion`
 
 -- Volcado de Datos Rol_Opcion
 INSERT INTO `rol_opcion` (`id_rol`, `id_opcion`) VALUES
-(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9), (1, 10), (1, 11), (1, 12), (1, 13), (1, 14), (1, 15), (1, 16), (1, 17), (1, 18),            -- Opciones de Administrador
+(1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8), (1, 9), (1, 10), (1, 11), (1, 12), (1, 13), (1, 14), (1, 15), (1, 16), (1, 17),            -- Opciones de Administrador
 (2, 1), (2, 2), 
 (3, 1);
 

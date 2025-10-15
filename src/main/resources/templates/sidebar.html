@@ -5,10 +5,12 @@
       <div id="sidebar-overlay" class="sidebar-overlay"></div>
       <nav
         id="sidebar"
-        class="sidebar d-flex flex-column flex-shrink-0 p-3 text-white bg-dark"
+        class="sidebar d-flex flex-column flex-shrink-0 p-3 pe-2 text-sidebar-color"
       >
         <div class="d-flex align-items-center justify-content-between mb-3">
-          <a th:href="@{/}" class="fs-4 text-white text-decoration-none fw-bold"
+          <a
+            th:href="@{/}"
+            class="fs-4 text-sidebar-color text-decoration-none fw-bold"
             >Mi Market</a
           >
           <button id="close-sidebar" class="btn btn-dark d-md-none p-0">
@@ -32,7 +34,7 @@
           <li th:each="opcion : ${session.opcionesIndependientes}">
             <a
               th:href="@{${opcion.ruta}}"
-              class="nav-link text-white rounded-lg"
+              class="nav-link text-sidebar-color rounded-lg"
               th:classappend="${opcion.ruta == activeUri} ? 'active' : ''"
             >
               <span th:text="${opcion.nombre}"></span>
@@ -40,14 +42,14 @@
           </li>
 
           <li
-            class="nav-item"
+            class="nav-item my-1 py-2"
             th:each="grupo : ${session.menuAgrupado.entrySet()}"
           >
             <th:block
               th:with="isGroupActive=${grupo.value.?[ruta == #activeUri].size() > 0}"
             >
               <a
-                class="nav-link text-white d-flex justify-content-between align-items-center"
+                class="nav-link text-sidebar-color d-flex justify-content-between align-items-center"
                 data-bs-toggle="collapse"
                 th:href="@{'#collapse-' + ${grupo.key}}"
                 th:classappend="${!isGroupActive} ? 'collapsed' : ''"
@@ -80,7 +82,7 @@
                   <li th:each="opcion : ${grupo.value}">
                     <a
                       th:href="@{${opcion.ruta}}"
-                      class="nav-link text-white rounded-lg"
+                      class="nav-link text-sidebar-color rounded-lg"
                       th:classappend="${opcion.ruta == activeUri} ? 'active-submenu' : ''"
                     >
                       <span th:text="${opcion.nombre}"></span>
@@ -96,12 +98,16 @@
         <div class="d-flex flex-column">
           <ul class="nav nav-pills flex-column">
             <li>
-              <a th:href="@{/catalogo}" class="nav-link text-white rounded-lg"
+              <a
+                th:href="@{/catalogo}"
+                class="nav-link text-sidebar-color rounded-lg"
                 >Catálogo</a
               >
             </li>
             <li>
-              <a th:href="@{/logout}" class="nav-link text-white rounded-lg"
+              <a
+                th:href="@{/logout}"
+                class="nav-link text-sidebar-color rounded-lg"
                 >Cerrar Sesión</a
               >
             </li>

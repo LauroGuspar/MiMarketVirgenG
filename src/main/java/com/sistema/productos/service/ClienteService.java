@@ -57,8 +57,7 @@ public class ClienteService {
             return clienteRepository.save(cliente);
         }
         else {
-            Cliente existente = clienteRepository.findById(cliente.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado para actualizar"));
+            Cliente existente = clienteRepository.findById(cliente.getId()).orElseThrow(() -> new IllegalArgumentException("Cliente no encontrado para actualizar"));
 
             return clienteRepository.save(cliente);
         }
