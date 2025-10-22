@@ -71,6 +71,7 @@ public class ProductoServiceImpl implements ProductoService {
         if (producto.getId() == null) {
             producto.setFechaCreacion(LocalDate.now());
         }
+        
 
         if (imagenFile != null && !imagenFile.isEmpty()) {
             if (producto.getId() != null) {

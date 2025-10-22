@@ -53,6 +53,20 @@ uni_nombre varchar(50) not null unique,
 uni_estado int not null default 1
 );
 
+create table tipo_producto(
+id_tipoproducto bigint auto_increment primary key,
+tipoproducto_nombre varchar(50) not null unique,
+tipoproducto_estado int not null default 1
+);
+
+create table categoria_tipo_producto(
+id_categoria bigint not null,
+id_tipoproducto bigint not null,
+primary key (id_categoria, id_tipoproducto),
+constraint `FK_Categoria_CategoriaTipoProduc` foreign key (`id_categoria`) references `categoria`(`id_categoria`),
+constraint `FK_TipoProduc_CategoriaTipoProduc` foreign key (`id_tipoproducto`) references `tipo_producto`(`id_tipoproducto`)
+);
+
 INSERT INTO `unidad` (`id_unidad`, `uni_nombre`, `uni_estado`) VALUES
 (1, 'Unidades', 1);
 
@@ -199,7 +213,6 @@ produc_fecha_creacion date null,
 produc_fecha_vencimiento date null,
 produc_stock int default 0,
 produc_stock_minimo int default 1,
-produc_cantidad_unidad int default 1,
 produc_imagen varchar(255) null,
 produc_estado int not null default 1,
 id_unidad int not null,

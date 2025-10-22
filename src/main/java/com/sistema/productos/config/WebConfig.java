@@ -34,7 +34,7 @@ public class WebConfig implements WebMvcConfigurer {
                         "/css/**", "/js/**", "/images/**",
                         "/error", "/favicon.ico",
                         "/logueo", "/cerrar-sesion",
-                        "/catalogo", "/carrito"
+                        "/catalogo", "/carrito", "/cambiar-password"
                 );
     }
 }

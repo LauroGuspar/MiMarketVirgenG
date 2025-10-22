@@ -45,9 +45,6 @@ public class Producto {
     @Column(name = "produc_stock_minimo")
     private Integer stockMinimo;
 
-    @Column(name="produc_cantidad_unidad")
-    private Integer cantidadUnidad;
-
     @Column(name = "produc_imagen")
     private String imagen;
 
@@ -65,6 +62,10 @@ public class Producto {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_marca", nullable = false)
     private Marca marca;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_tipoproducto", nullable = false)
+    private Marca tipo_producto;
 
     public Long getId() {
         return id;
@@ -178,11 +179,12 @@ public class Producto {
         this.marca = marca;
     }
 
-    public Integer getCantidadUnidad() {
-        return cantidadUnidad;
+    public Marca getTipo_producto() {
+        return tipo_producto;
     }
 
-    public void setCantidadUnidad(Integer cantidadUnidad) {
-        this.cantidadUnidad = cantidadUnidad;
+    public void setTipo_producto(Marca tipo_producto) {
+        this.tipo_producto = tipo_producto;
     }
+    
 }
