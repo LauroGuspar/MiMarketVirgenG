@@ -12,13 +12,9 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     Optional<Cliente> findByCorreo(String correo);
     Optional<Cliente> findByCorreoIgnoreCase(String correo);
     Optional<Cliente> findByTipodocumento_IdAndNdocumento(Long tipodocumentoId, String ndocumento);
-
-
     boolean existsByCorreo(String correo);
-
     List<Cliente> findAllByEstadoNot(Integer estado);
     long countByEstadoNot(Integer estado);
-
     @Modifying
     @Query("UPDATE Cliente c SET c.estado = :nuevoEstado WHERE c.id = :id")
     void actualizarEstado(Long id, Integer nuevoEstado);

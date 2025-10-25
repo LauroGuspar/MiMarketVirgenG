@@ -68,6 +68,7 @@ public class ProductoServiceImpl implements ProductoService {
         producto.setCategoria(categoria);
         producto.setMarca(marca);
         producto.setUnidad(unidad);
+        producto.setStock(0);
         if (producto.getId() == null) {
             producto.setFechaCreacion(LocalDate.now());
         }

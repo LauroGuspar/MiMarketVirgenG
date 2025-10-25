@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,19 +17,23 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sistema.productos.model.Categoria;
+import com.sistema.productos.model.TipoProducto;
 import com.sistema.productos.repository.CategoriaRepository;
+import com.sistema.productos.repository.TipoProductoRepository;
 import com.sistema.productos.service.CategoriaService;
 
 @Service
 public class CategoriaServiceImpl implements CategoriaService {
 
     private final CategoriaRepository categoriaRepository;
+    private final TipoProductoRepository tipoProductoRepository;
 
     @Value("${file.upload-dir.categorias}")
     private String uploadDir;
 
-    public CategoriaServiceImpl(CategoriaRepository categoriaRepository) {
+    public CategoriaServiceImpl(CategoriaRepository categoriaRepository, TipoProductoRepository tipoProductoRepository) {
         this.categoriaRepository = categoriaRepository;
+        this.tipoProductoRepository = tipoProductoRepository;
     }
 
     @Override
@@ -48,10 +55,8 @@ public class CategoriaServiceImpl implements CategoriaService {
             if (categoria.getId() != null && categoria.getImg() != null) {
                 eliminarImagenFisica(categoria.getImg());
             }
-
             String nombreUnico = UUID.randomUUID().toString() + "_" + imagenFile.getOriginalFilename();
             Path rutaAbsoluta = Paths.get(uploadDir).resolve(nombreUnico).toAbsolutePath();
-
             try {
                 Files.createDirectories(rutaAbsoluta.getParent());
                 Files.write(rutaAbsoluta, imagenFile.getBytes());
@@ -71,13 +76,14 @@ public class CategoriaServiceImpl implements CategoriaService {
                     if (categoria.getImg() != null) {
                         existente.setImg(categoria.getImg());
                     }
+                    existente.setTiposProducto(procesarTiposProducto(categoria.getTiposProducto()));
                     return categoriaRepository.save(existente);
                 } else {
                     throw new IllegalArgumentException("Ya existe una categoría con el nombre: " + categoria.getNombre());
                 }
             }
         }
-
+        categoria.setTiposProducto(procesarTiposProducto(categoria.getTiposProducto()));
         return categoriaRepository.save(categoria);
     }
 
@@ -89,6 +95,15 @@ public class CategoriaServiceImpl implements CategoriaService {
         } catch (IOException e) {
             System.err.println("Error al eliminar la imagen: " + e.getMessage());
         }
+    }
+
+    private Set<TipoProducto> procesarTiposProducto(Set<TipoProducto> tiposProducto) {
+        if (tiposProducto == null || tiposProducto.isEmpty()) {
+            return new HashSet<>();
+        }
+        Set<Long> idsTipoProducto = tiposProducto.stream().map(TipoProducto::getId).collect(Collectors.toSet());
+        List<TipoProducto> tiposReales = tipoProductoRepository.findAllById(idsTipoProducto);
+        return new HashSet<>(tiposReales);
     }
 
      @Override

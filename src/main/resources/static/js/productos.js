@@ -31,12 +31,10 @@ $(document).ready(function () {
                 },
                 { data: 'nombre', title: 'Nombre' },
                 { data: 'codigo', title: 'Código' },
-                { data: 'cantidadUnidad', title: 'Cantidad Por Unidad' },
                 { data: 'categoria.nombre', title: 'Categoría' },
                 { data: 'marca.nombre', title: 'Marca' },
                 { data: 'descripcion', title: 'Descripción' },
                 { data: 'precio', title: 'Precio', render: data => `S/ ${parseFloat(data || 0).toFixed(2)}` },
-                { data: 'stock', title: 'Stock' },
                 { data: 'stockMinimo', title: 'Stock Mín.' },
                 { data: 'unidad.nombre', title: 'Unidad' },
                 { data: 'fechaCreacion', title: 'Fec. Creación' },
@@ -109,10 +107,8 @@ $(document).ready(function () {
             id: $('#id').val() || null,
             nombre: $('#nombre').val(),
             codigo: $('#codigo').val(),
-            cantidadUnidad: $('#cantidadUnidad').val(),
             descripcion: $('#descripcion').val(),
             precio: $('#precio').val(),
-            stock: $('#stock').val(),
             stockMinimo: $('#stockMinimo').val(),
             fechaVencimiento: $('#fechaVencimiento').val() || null,
             categoria: { id: $('#categoria').val() },
@@ -226,10 +222,8 @@ $(document).ready(function () {
         $('#id').val(producto.id);
         $('#nombre').val(producto.nombre);
         $('#codigo').val(producto.codigo);
-        $('#cantidadUnidad').val(producto.cantidadUnidad);
         $('#descripcion').val(producto.descripcion);
         $('#precio').val(producto.precio);
-        $('#stock').val(producto.stock);
         $('#stockMinimo').val(producto.stockMinimo);
         $('#fechaVencimiento').val(producto.fechaVencimiento);
 

@@ -1,6 +1,7 @@
 package com.sistema.productos.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -17,16 +18,20 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sistema.productos.model.Categoria;
+import com.sistema.productos.model.dto.TipoProductoDTO;
 import com.sistema.productos.service.CategoriaService;
+import com.sistema.productos.service.TipoProductoService;
 
 @Controller
 @RequestMapping("/productos/categorias")
 public class CategoriaController {
 
     private final CategoriaService categoriaService;
+    private final TipoProductoService tipoProductoService;
 
-    public CategoriaController(CategoriaService categoriaService) {
+    public CategoriaController(CategoriaService categoriaService, TipoProductoService tipoProductoService) {
         this.categoriaService = categoriaService;
+        this.tipoProductoService = tipoProductoService;
     }
 
     @GetMapping("/listar")
@@ -119,6 +124,22 @@ public class CategoriaController {
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "Error al eliminar la categoría: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(response);
+        }
+    }
+
+    @GetMapping("/api/{idCategoria}/tipos-producto")
+    @ResponseBody
+    public ResponseEntity<?> getTiposProductoPorCategoria(@PathVariable Long idCategoria) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<TipoProductoDTO> tipos = tipoProductoService.listarTodosLosTiposProducto(idCategoria);
+            response.put("success", true);
+            response.put("data", tipos);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Error al obtener los tipos de producto: " + e.getMessage());
             return ResponseEntity.internalServerError().body(response);
         }
     }

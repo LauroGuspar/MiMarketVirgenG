@@ -3,7 +3,6 @@ $(document).ready(function () {
     let dataTable;
     let marcaModal;
     const formid = '#formMarca';
-
     const API_BASE = '/productos/marcas/api';
     const ENDPOINTS = {
         list: `${API_BASE}/listar`,
