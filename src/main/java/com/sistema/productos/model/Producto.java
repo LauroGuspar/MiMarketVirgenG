@@ -63,10 +63,6 @@ public class Producto {
     @JoinColumn(name = "id_marca", nullable = false)
     private Marca marca;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_tipoproducto", nullable = false)
-    private Marca tipo_producto;
-
     public Long getId() {
         return id;
     }
@@ -178,13 +174,4 @@ public class Producto {
     public void setMarca(Marca marca) {
         this.marca = marca;
     }
-
-    public Marca getTipo_producto() {
-        return tipo_producto;
-    }
-
-    public void setTipo_producto(Marca tipo_producto) {
-        this.tipo_producto = tipo_producto;
-    }
-    
 }

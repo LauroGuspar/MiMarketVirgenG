@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.sistema.productos.model.Marca;
 
 public interface MarcaService {
+    
     List<Marca> listarTodasLasMarcas();
     Optional<Marca> obtenerMarcaPorId(Long id);
     Marca guardarMarca(Marca marca);

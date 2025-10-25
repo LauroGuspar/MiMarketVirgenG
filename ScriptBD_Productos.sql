@@ -112,15 +112,16 @@ INSERT INTO `opcion` (`id_opcion`, `opcion_nombre`, `opcion_ruta`, `opcion_icon`
 (6, 'Categorías', '/productos/categorias/listar', null),
 (7, 'Marcas', '/productos/marcas/listar', null),
 (8, 'Unidad', '/productos/unidad/listar', null),
-(9, 'Listado', '/compras//listar', null),
-(10, 'Proovedores', '/compras/proovedor/listar', null),
-(11, 'Ordenes de Compra', '/compras/ordenes/listar', null),
-(12, 'Movimientos', '/inventarios/movimientos/listar', null),
-(13, 'Traslados', '/inventarios/traslados/listar', null),
-(14, 'Devolucion A Proovedor', '/inventarios/devolucion/listar', null),
-(15, 'Pedidos', '/tiendavirtual/pedidos/listar', null),
-(16, 'Productos Tienda V.', '/tiendavirtual/productos/listar', null),
-(17, 'Tags-Categorias', '/tiendavirtual/tags/listar', null);
+(9, 'Tipo de Productos', '/productos/tipos-producto/listar', null),
+(10, 'Listado', '/compras//listar', null),
+(11, 'Proovedores', '/compras/proovedor/listar', null),
+(12, 'Ordenes de Compra', '/compras/ordenes/listar', null),
+(13, 'Movimientos', '/inventarios/movimientos/listar', null),
+(14, 'Traslados', '/inventarios/traslados/listar', null),
+(15, 'Devolucion A Proovedor', '/inventarios/devolucion/listar', null),
+(16, 'Pedidos', '/tiendavirtual/pedidos/listar', null),
+(17, 'Productos Tienda V.', '/tiendavirtual/productos/listar', null),
+(18, 'Tags-Categorias', '/tiendavirtual/tags/listar', null);
 
 
 create table rol_opcion(
