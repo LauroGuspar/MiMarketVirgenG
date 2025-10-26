@@ -79,6 +79,7 @@
                     <th>Nombre</th>
                     <th>Código</th>
                     <th>Categoría</th>
+                    <th>Tipo Prod.</th>
                     <th>Marca</th>
                     <th>Descripción</th>
                     <th>Precio</th>
@@ -182,6 +183,19 @@
                 <div class="col-md-3">
                   <label for="unidad" class="form-label">Unidad</label>
                   <select id="unidad" class="form-select" required></select>
+                </div>
+                <div class="col-md-3">
+                  <label for="tipoProducto" class="form-label"
+                    >Tipo Producto</label
+                  >
+                  <select
+                    id="tipoProducto"
+                    class="form-select"
+                    required
+                    disabled
+                  >
+                    <option value="">Seleccione categoría</option>
+                  </select>
                 </div>
                 <div class="col-12">
                   <label for="fechaVencimiento" class="form-label"

@@ -17,7 +17,7 @@ public class Unidad {
     @Column(name = "id_unidad")
     private Integer id;
 
-    @Column(name = "uni_nombre", nullable = false, unique = true)
+    @Column(name = "uni_nombre",length=50, nullable = false, unique = true)
     private String nombre;
 
     @Column(name = "uni_estado", nullable = false)

@@ -15,31 +15,31 @@ public class Cliente {
 
     @NotBlank(message = "El nombre es obligatorio")
     @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres")
-    @Column(name="cli_nombre",nullable = false)
+    @Column(name="cli_nombre")
     private String nombre;
 
     @NotBlank(message="El Apellido Paterno es obligatorio")
     @Size(min=5, max=100, message="El Apellido Paterno debe de tener mínimos 5 y maximo 100 caracteres")
-    @Column(name="cli_apellido_paterno",nullable=false)
+    @Column(name="cli_apellido_paterno")
     private String apellidoPaterno;
 
     @NotBlank(message="El Apellido Materno es obligatorio")
     @Size(min=5, max=100, message="El Apellido Materno debe de tener mínimos 5 y maximo 100 caracteres")
-    @Column(name="cli_apellido_materno", nullable=false)
+    @Column(name="cli_apellido_materno")
     private String apellidoMaterno;
 
     @NotBlank(message = "El correo es obligatorio")
     @Email(message = "El correo debe tener un formato válido")
-    @Column(name="cli_correo", nullable = false, unique = true, length=60)
+    @Column(name="cli_correo", unique = true, length=60)
     private String correo;
 
     @NotBlank(message="El Telefono es obligatorio")
     @Size(min=9, max=9, message="El Número telefonico debe de tener mínimos 9 y maximo 9 caracteres")
-    @Column(name="cli_telefono", nullable=false, unique = true)
+    @Column(name="cli_telefono", columnDefinition="char(9)", unique = true)
     private String telefono;
 
     @NotBlank(message="La dirección es obligatorio")
-    @Size(min=10, max=100, message="La Dirección debe de tener mínimos 20 y maximo 100 caracteres")
+    @Size(min=10, max=100, message="La Dirección debe de tener mínimos 10 y maximo 100 caracteres")
     @Column(name="cli_direccion",nullable=false)
     private String direccion;
 

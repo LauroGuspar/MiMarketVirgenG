@@ -75,20 +75,13 @@ $(document).ready(function () {
             .then(data => {
                 if (data.success && data.data) {
                     const $filtro = $('#filtroCategoria');
-                    const $selectModal = $('#categoriasSelect'); // Selector del modal
-
-                    // Limpia solo el select del modal (el filtro ya tiene "Todas")
+                    const $selectModal = $('#categoriasSelect');
                     $selectModal.empty();
 
                     data.data.forEach(categoria => {
-                        // Añade al filtro de la tabla
                         $filtro.append(new Option(categoria.nombre, categoria.id));
-
-                        // Añade al select del modal
                         $selectModal.append(new Option(categoria.nombre, categoria.id));
                     });
-
-                    // Limpia la selección de Select2 (por si acaso)
                     $selectModal.val(null).trigger('change');
                 }
             })
@@ -111,17 +104,12 @@ $(document).ready(function () {
     }
 
     function saveTipoProducto() {
-        // 1. Obtener IDs del Select2
         const idsCategorias = $('#categoriasSelect').val();
-
-        // 2. Mapearlos al formato JSON que espera el backend
         const categoriasParaEnviar = idsCategorias.map(id => ({ "id": parseInt(id) }));
-
-        // 3. Construir el objeto principal
         const tipoProductoData = {
             id: $('#id').val() || null,
             nombre: $('#nombre').val().trim(),
-            categorias: categoriasParaEnviar // --- Añadir las categorías ---
+            categorias: categoriasParaEnviar
         };
 
         if (!tipoProductoData.nombre) {
@@ -135,7 +123,7 @@ $(document).ready(function () {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(tipoProductoData) // Enviar el objeto completo
+            body: JSON.stringify(tipoProductoData)
         })
             .then(response => response.json())
             .then(data => {
@@ -218,23 +206,17 @@ $(document).ready(function () {
         isEditing = false;
         AppUtils.clearForm(formid);
         $('#modalTitle').text('Agregar Tipo de Producto');
-
-        // Limpiar el select2
         $('#categoriasSelect').val(null).trigger('change');
-
         tipoProductoModal.show();
     }
 
-    function openModalForEdit(tipoProducto) { // tipoProducto es el DTO
+    function openModalForEdit(tipoProducto) {
         isEditing = true;
         AppUtils.clearForm(formid);
         $('#modalTitle').text('Editar Tipo de Producto');
         $('#id').val(tipoProducto.id);
         $('#nombre').val(tipoProducto.nombre);
-
-        // Usar el nuevo campo 'idsCategorias' del DTO para poblar el select2
         $('#categoriasSelect').val(tipoProducto.idsCategorias).trigger('change');
-
         tipoProductoModal.show();
     }
 });

@@ -5,9 +5,7 @@ $(document).ready(function () {
     const formId = '#formUsuario';
 
     const ValidacionTDocumento = {
-        'DNI': { length: 8, message: 'El DNI debe tener 8 dígitos.' },
-        'RUC': { length: 11, message: 'El RUC debe tener 11 dígitos.' },
-        'Carné de Extranjería': { length: 20, message: 'El Carné de Extranjería debe tener como máximo 20 caracteres.' }
+        'DNI': { length: 8, message: 'El DNI debe tener 8 dígitos.' }
     };
 
     const API_BASE = '/empleados/api';
@@ -19,6 +17,7 @@ $(document).ready(function () {
         roles: `${API_BASE}/roles`,
         tiposDocumento: `${API_BASE}/tipodocumento`,
         toggleStatus: (id) => `${API_BASE}/cambiar-estado/${id}`,
+        buscarReniec: (dni) => `/reniec/api/buscar-dni/${dni}`,
     };
 
     initializeDataTable();
@@ -84,6 +83,45 @@ $(document).ready(function () {
             this.value = this.value.replace(/[^0-9]/g, '');
             validarTelefono();
         });
+        $('#btnBuscarReniec').on('click', async function () {
+            const dni = $('#ndocumento').val().trim();
+            const selectedText = $('#id_tipodocumento').find('option:selected').text();
+
+            if (selectedText !== 'DNI' || dni.length !== 8) {
+                Swal.fire('Advertencia', 'Ingrese un DNI válido de 8 dígitos', 'warning');
+                return;
+            }
+
+            try {
+                AppUtils.showLoading(true);
+                const response = await fetch(ENDPOINTS.buscarReniec(dni));
+                const result = await response.json();
+
+                if (result.success && result.data && result.data.datos) {
+                    const datos = result.data.datos;
+
+                    // Autocompletar campos del formulario de Usuarios
+                    $('#nombre').val(datos.nombres || '');
+                    $('#apellidoPaterno').val(datos.ape_paterno || '');
+                    $('#apellidoMaterno').val(datos.ape_materno || '');
+
+                    if (datos.domiciliado) {
+                        const d = datos.domiciliado;
+                        const direccionCompleta = [d.direccion, d.distrito, d.provincia, d.departamento]
+                            .filter(Boolean)
+                            .join(', ');
+                        $('#direccion').val(direccionCompleta);
+                    }
+                } else {
+                    Swal.fire('No encontrado', result.message || 'No se encontraron datos para este DNI', 'info');
+                }
+            } catch (error) {
+                console.error('Error al buscar en RENIEC:', error);
+                Swal.fire('Error', 'No se pudo conectar al servicio RENIEC', 'error');
+            } finally {
+                AppUtils.showLoading(false);
+            }
+        });
     }
 
     function validarNumeroDocumento() {
@@ -138,15 +176,10 @@ $(document).ready(function () {
     }
 
     function loadTiposDocumento() {
-        fetch(ENDPOINTS.tiposDocumento)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const select = $('#id_tipodocumento');
-                    select.empty().append('<option value="" disabled selected>Selecciona un Tipo</option>');
-                    data.data.forEach(doc => select.append(`<option value="${doc.id}">${doc.nombre}</option>`));
-                } else { AppUtils.showNotification('Error al cargar tipos de documento', 'error'); }
-            }).catch(error => console.error('Error cargando tipos de documento:', error));
+        const select = $('#id_tipodocumento');
+        select.empty();
+        select.append('<option value="1" selected>DNI</option>');
+        select.trigger('change');
     }
 
     function saveUsuario() {
@@ -241,10 +274,10 @@ $(document).ready(function () {
     function openModalForNew() {
         isEditing = false;
         AppUtils.clearForm(formId);
+        $('#id_tipodocumento').val('1').trigger('change');
+
         const ndocumentoInput = $('#ndocumento');
-        ndocumentoInput.removeAttr('maxlength');
-        ndocumentoInput.attr('placeholder', 'N° de Documento');
-        ndocumentoInput.removeData('expected-length');
+        ndocumentoInput.attr('placeholder', '8 dígitos');
         ndocumentoInput.removeData('validation-message');
 
         $('#modalTitle').text('Agregar Usuario');
@@ -253,7 +286,7 @@ $(document).ready(function () {
 
     function openModalForEdit(usuario) {
         isEditing = true;
-        AppUtils.clearForm(formId);
+        clearForm(formId); // Usando la función local
         $('#modalTitle').text('Editar Usuario');
 
         $('#id').val(usuario.id);
@@ -267,11 +300,9 @@ $(document).ready(function () {
         $('#ndocumento').val(usuario.ndocumento);
         $('#id_rol').val(usuario.rol ? usuario.rol.id : '');
         $('#clave').attr('placeholder', 'Dejar en blanco para no cambiar');
+        $('#id_tipodocumento').val('1').trigger('change');
+        $('#ndocumento').val(usuario.ndocumento);
 
-        if (usuario.tipodocumento) {
-            $('#id_tipodocumento').val(usuario.tipodocumento.id).trigger('change');
-            $('#ndocumento').val(usuario.ndocumento);
-        }
         usuarioModal.show();
     }
 });

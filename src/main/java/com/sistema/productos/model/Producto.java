@@ -21,16 +21,16 @@ public class Producto {
     @Column(name = "id_producto")
     private Long id;
 
-    @Column(name = "produc_nombre", nullable = false)
+    @Column(name = "produc_nombre", length=100, nullable = false)
     private String nombre;
 
-    @Column(name = "produc_codigo", nullable = false, unique = true)
+    @Column(name = "produc_codigo", length=50, nullable = false, unique = true)
     private String codigo;
 
-    @Column(name = "produc_descripcion", nullable = false)
+    @Column(name = "produc_descripcion", length=150, nullable = false)
     private String descripcion;
 
-    @Column(name = "produc_precio")
+    @Column(name = "produc_precio", columnDefinition="decimal(10,0)", nullable=false)
     private BigDecimal precio;
 
     @Column(name = "produc_fecha_creacion")
@@ -62,6 +62,10 @@ public class Producto {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_marca", nullable = false)
     private Marca marca;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_tipoproducto")
+    private TipoProducto tipoProducto;
 
     public Long getId() {
         return id;
@@ -173,5 +177,13 @@ public class Producto {
 
     public void setMarca(Marca marca) {
         this.marca = marca;
+    }
+
+    public TipoProducto getTipoProducto() {
+        return tipoProducto;
+    }
+
+    public void setTipoProducto(TipoProducto tipoProducto) {
+        this.tipoProducto = tipoProducto;
     }
 }

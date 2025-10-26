@@ -112,6 +112,44 @@
             <form id="formCliente" novalidate>
               <input type="hidden" id="id" name="id" />
               <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="id_tipodocumento" class="form-label"
+                    >Tipo Documento:</label
+                  >
+                  <select
+                    class="form-select"
+                    id="id_tipodocumento"
+                    name="tipodocumento"
+                  ></select>
+                  <div
+                    id="id_tipodocumento-error"
+                    class="invalid-feedback d-block"
+                  ></div>
+                </div>
+                <div class="col-md-6">
+                  <label for="ndocumento" class="form-label"
+                    >N° Documento:</label
+                  >
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      id="ndocumento"
+                      name="ndocumento"
+                      class="form-control"
+                    />
+                    <button
+                      type="button"
+                      id="btnBuscarReniec"
+                      class="btn btn-outline-secondary"
+                    >
+                      <i class="bi bi-search"></i>
+                    </button>
+                  </div>
+                  <div
+                    id="ndocumento-error"
+                    class="invalid-feedback d-block"
+                  ></div>
+                </div>
                 <div class="col-md-12">
                   <label for="nombre" class="form-label">Nombre:</label>
                   <input
@@ -149,44 +187,6 @@
                   />
                   <div
                     id="apellidoMaterno-error"
-                    class="invalid-feedback d-block"
-                  ></div>
-                </div>
-                <div class="col-md-6">
-                  <label for="id_tipodocumento" class="form-label"
-                    >Tipo Documento:</label
-                  >
-                  <select
-                    class="form-select"
-                    id="id_tipodocumento"
-                    name="tipodocumento"
-                  ></select>
-                  <div
-                    id="id_tipodocumento-error"
-                    class="invalid-feedback d-block"
-                  ></div>
-                </div>
-                <div class="col-md-6">
-                  <label for="ndocumento" class="form-label"
-                    >N° Documento:</label
-                  >
-                  <div class="input-group">
-                    <input
-                      type="text"
-                      id="ndocumento"
-                      name="ndocumento"
-                      class="form-control"
-                    />
-                    <button
-                      type="button"
-                      id="btnBuscarReniec"
-                      class="btn btn-outline-secondary"
-                    >
-                      <i class="bi bi-search"></i>
-                    </button>
-                  </div>
-                  <div
-                    id="ndocumento-error"
                     class="invalid-feedback d-block"
                   ></div>
                 </div>

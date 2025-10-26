@@ -16,7 +16,7 @@ public class TipoDocumento {
     @Column(name="id_tipodocumento", nullable=false)
     private Long id;
 
-    @Column(name="tipodoc_nombre", unique=true)
+    @Column(name="tipodoc_nombre",length=50, unique=true)
     private String nombre;
 
     @Column(name="tipodoc_estado",nullable=false)

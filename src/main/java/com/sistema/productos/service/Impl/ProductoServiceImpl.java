@@ -17,10 +17,12 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sistema.productos.model.Categoria;
 import com.sistema.productos.model.Marca;
 import com.sistema.productos.model.Producto;
+import com.sistema.productos.model.TipoProducto;
 import com.sistema.productos.model.Unidad;
 import com.sistema.productos.repository.CategoriaRepository;
 import com.sistema.productos.repository.MarcaRepository;
 import com.sistema.productos.repository.ProductoRepository;
+import com.sistema.productos.repository.TipoProductoRepository;
 import com.sistema.productos.repository.UnidadRepository;
 import com.sistema.productos.service.ProductoService;
 
@@ -30,16 +32,18 @@ public class ProductoServiceImpl implements ProductoService {
     private final ProductoRepository productoRepository;
     private final CategoriaRepository categoriaRepository;
     private final MarcaRepository marcaRepository;
-    private final UnidadRepository unidadRepository; 
+    private final UnidadRepository unidadRepository;
+    private final TipoProductoRepository tipoProductoRepository;
 
     @Value("${file.upload-dir.productos}")
     private String uploadDir;
 
-    public ProductoServiceImpl(ProductoRepository productoRepository, CategoriaRepository categoriaRepository, MarcaRepository marcaRepository, UnidadRepository unidadRepository) {
+    public ProductoServiceImpl(ProductoRepository productoRepository, CategoriaRepository categoriaRepository, MarcaRepository marcaRepository, UnidadRepository unidadRepository, TipoProductoRepository tipoProductoRepository) {
     this.productoRepository = productoRepository;
     this.categoriaRepository = categoriaRepository;
     this.marcaRepository = marcaRepository;
     this.unidadRepository = unidadRepository;
+    this.tipoProductoRepository = tipoProductoRepository;
 }
     
     @Override
@@ -58,22 +62,28 @@ public class ProductoServiceImpl implements ProductoService {
     @Transactional
     @SuppressWarnings("CallToPrintStackTrace")
     public Producto guardarProducto(Producto producto, MultipartFile imagenFile) throws IOException {
-        Categoria categoria = categoriaRepository.findById(producto.getCategoria().getId())
-                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
-        Marca marca = marcaRepository.findById(producto.getMarca().getId())
-                .orElseThrow(() -> new RuntimeException("Marca no encontrada"));
-        Unidad unidad = unidadRepository.findById((long)producto.getUnidad().getId())
-                .orElseThrow(() -> new RuntimeException("Unidad no encontrada"));
+        Categoria categoria = categoriaRepository.findById(producto.getCategoria().getId()).orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+        
+        Marca marca = marcaRepository.findById(producto.getMarca().getId()).orElseThrow(() -> new RuntimeException("Marca no encontrada"));
+        
+        Unidad unidad = unidadRepository.findById((long)producto.getUnidad().getId()).orElseThrow(() -> new RuntimeException("Unidad no encontrada"));
 
+        TipoProducto tipoProducto = null;
+        if (producto.getTipoProducto() != null && producto.getTipoProducto().getId() != null) {
+            tipoProducto = tipoProductoRepository.findById(producto.getTipoProducto().getId())
+                    .orElseThrow(() -> new RuntimeException("Tipo de producto no encontrado"));
+        } else {
+            throw new RuntimeException("El tipo de producto es obligatorio");
+        }
+        
         producto.setCategoria(categoria);
         producto.setMarca(marca);
         producto.setUnidad(unidad);
+        producto.setTipoProducto(tipoProducto);
         producto.setStock(0);
         if (producto.getId() == null) {
             producto.setFechaCreacion(LocalDate.now());
         }
-        
-
         if (imagenFile != null && !imagenFile.isEmpty()) {
             if (producto.getId() != null) {
                 productoRepository.findById(producto.getId()).ifPresent(p -> {
