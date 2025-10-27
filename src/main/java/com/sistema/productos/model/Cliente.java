@@ -3,6 +3,7 @@ package com.sistema.productos.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -13,53 +14,49 @@ public class Cliente {
     @Column(name="id_cliente", nullable=false)
     private Long id;
 
-    @NotBlank(message = "El nombre es obligatorio")
-    @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres")
+    @Size(max = 100, message = "El nombre debe tener máximo 100 caracteres")
     @Column(name="cli_nombre")
     private String nombre;
 
-    @NotBlank(message="El Apellido Paterno es obligatorio")
-    @Size(min=5, max=100, message="El Apellido Paterno debe de tener mínimos 5 y maximo 100 caracteres")
+    @Size(max=100, message="El Apellido Paterno debe tener máximo 100 caracteres")
     @Column(name="cli_apellido_paterno")
     private String apellidoPaterno;
 
-    @NotBlank(message="El Apellido Materno es obligatorio")
-    @Size(min=5, max=100, message="El Apellido Materno debe de tener mínimos 5 y maximo 100 caracteres")
+    @Size(max=100, message="El Apellido Materno debe tener máximo 100 caracteres")
     @Column(name="cli_apellido_materno")
     private String apellidoMaterno;
 
-    @NotBlank(message = "El correo es obligatorio")
-    @Email(message = "El correo debe tener un formato válido")
-    @Column(name="cli_correo", unique = true, length=60)
-    private String correo;
-
-    @NotBlank(message="El Telefono es obligatorio")
-    @Size(min=9, max=9, message="El Número telefonico debe de tener mínimos 9 y maximo 9 caracteres")
-    @Column(name="cli_telefono", columnDefinition="char(9)", unique = true)
-    private String telefono;
-
-    @NotBlank(message="La dirección es obligatorio")
-    @Size(min=10, max=100, message="La Dirección debe de tener mínimos 10 y maximo 100 caracteres")
-    @Column(name="cli_direccion",nullable=false)
+    @Size(max=100, message="La Dirección Personal debe tener máximo 100 caracteres")
+    @Column(name="cli_direccion")
     private String direccion;
 
-    @Column(name="cli_estado", nullable = false)
-    private Integer estado = 1;
+    @Size(max = 100, message = "El nombre de empresa debe tener máximo 100 caracteres")
+    @Column(name="cli_nombre_empresa")
+    private String nombreEmpresa;
+
+    @Size(max = 100, message = "La direccion de empresa debe tener máximo 100 caracteres")
+    @Column(name="cli_direccion_empresa")
+    private String direccionEmpresa;
 
     @NotBlank(message="El Número de Documento es obligatorio")
-    @Size(min=8, max=20, message="El Número De Documento debe de tener mínimos 8 Caracteres")
+    @Size(min=8, max=20, message="El Número De Documento debe tener entre 8 y 20 Caracteres")
     @Column(name="cli_ndocumento",nullable=false, unique = true)
     private String ndocumento;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_tipodocumento")
+    @JoinColumn(name = "id_tipodocumento", nullable = false)
     private TipoDocumento tipodocumento;
 
-    @Column(name="cli_nombre_empresa")
-    private String nombreEmpresa;
+    @Email(message = "El correo debe tener un formato válido si se ingresa")
+    @Column(name="cli_correo", unique = true, length=60)
+    private String correo;
 
-    @Column(name="cli_direccion_empresa")
-    private String direccionEmpresa;
+    @Pattern(regexp = "^$|^[0-9]{9}$", message = "El teléfono debe tener 9 dígitos o estar vacío")
+    @Column(name="cli_telefono", columnDefinition="char(9)", unique = true)
+    private String telefono;
+
+    @Column(name="cli_estado", nullable = false)
+    private Integer estado = 1;
 
     public Cliente() {
     }
@@ -86,67 +83,59 @@ public class Cliente {
         this.id = id;
     }
 
-    public @NotBlank(message = "El nombre es obligatorio") @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres") String getNombre() {
+    public String getNombre() {
         return nombre;
     }
 
-    public void setNombre(@NotBlank(message = "El nombre es obligatorio") @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres") String nombre) {
+    public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
-    public @NotBlank(message = "El Apellido Paterno es obligatorio") @Size(min = 5, max = 100, message = "El Apellido Paterno debe de tener mínimos 5 y maximo 100 caracteres") String getApellidoPaterno() {
+    public String getApellidoPaterno() {
         return apellidoPaterno;
     }
 
-    public void setApellidoPaterno(@NotBlank(message = "El Apellido Paterno es obligatorio") @Size(min = 5, max = 100, message = "El Apellido Paterno debe de tener mínimos 5 y maximo 100 caracteres") String apellidoPaterno) {
+    public void setApellidoPaterno(String apellidoPaterno) {
         this.apellidoPaterno = apellidoPaterno;
     }
 
-    public @NotBlank(message = "El Apellido Materno es obligatorio") @Size(min = 5, max = 100, message = "El Apellido Materno debe de tener mínimos 5 y maximo 100 caracteres") String getApellidoMaterno() {
+    public String getApellidoMaterno() {
         return apellidoMaterno;
     }
 
-    public void setApellidoMaterno(@NotBlank(message = "El Apellido Materno es obligatorio") @Size(min = 5, max = 100, message = "El Apellido Materno debe de tener mínimos 5 y maximo 100 caracteres") String apellidoMaterno) {
+    public void setApellidoMaterno(String apellidoMaterno) {
         this.apellidoMaterno = apellidoMaterno;
     }
 
-    public @NotBlank(message = "El correo es obligatorio") @Email(message = "El correo debe tener un formato válido") String getCorreo() {
-        return correo;
-    }
-
-    public void setCorreo(@NotBlank(message = "El correo es obligatorio") @Email(message = "El correo debe tener un formato válido") String correo) {
-        this.correo = correo;
-    }
-
-    public @NotBlank(message = "El Telefono es obligatorio") @Size(min = 9, max = 9, message = "El Número telefonico debe de tener mínimos 9 y maximo 9 caracteres") String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(@NotBlank(message = "El Telefono es obligatorio") @Size(min = 9, max = 9, message = "El Número telefonico debe de tener mínimos 9 y maximo 9 caracteres") String telefono) {
-        this.telefono = telefono;
-    }
-
-    public @NotBlank(message = "La dirección es obligatorio") @Size(min = 10, max = 100, message = "La Dirección debe de tener mínimos 20 y maximo 100 caracteres") String getDireccion() {
+    public String getDireccion() {
         return direccion;
     }
 
-    public void setDireccion(@NotBlank(message = "La dirección es obligatorio") @Size(min = 10, max = 100, message = "La Dirección debe de tener mínimos 20 y maximo 100 caracteres") String direccion) {
+    public void setDireccion(String direccion) {
         this.direccion = direccion;
     }
 
-    public Integer getEstado() {
-        return estado;
+    public String getNombreEmpresa() {
+        return nombreEmpresa;
     }
 
-    public void setEstado(Integer estado) {
-        this.estado = estado;
+    public void setNombreEmpresa(String nombreEmpresa) {
+        this.nombreEmpresa = nombreEmpresa;
     }
 
-    public @NotBlank(message = "El Número de Documento es obligatorio") @Size(min = 8, max = 20, message = "El Número De Documento debe de tener mínimos 8 Caracteres") String getNdocumento() {
+    public String getDireccionEmpresa() {
+        return direccionEmpresa;
+    }
+
+    public void setDireccionEmpresa(String direccionEmpresa) {
+        this.direccionEmpresa = direccionEmpresa;
+    }
+
+    public String getNdocumento() {
         return ndocumento;
     }
 
-    public void setNdocumento(@NotBlank(message = "El Número de Documento es obligatorio") @Size(min = 8, max = 20, message = "El Número De Documento debe de tener mínimos 8 Caracteres") String ndocumento) {
+    public void setNdocumento(String ndocumento) {
         this.ndocumento = ndocumento;
     }
 
@@ -158,19 +147,27 @@ public class Cliente {
         this.tipodocumento = tipodocumento;
     }
 
-    public @NotBlank(message = "El nombre de empresa es obligatorio") @Size(min = 2, max = 100, message = "El nombre de empresa debe tener entre 2 y 100 caracteres") String getNombreEmpresa() {
-        return nombreEmpresa;
+    public String getCorreo() {
+        return correo;
     }
 
-    public void setNombreEmpresa(@NotBlank(message = "El nombre de empresa es obligatorio") @Size(min = 2, max = 100, message = "El nombre de empresa debe tener entre 2 y 100 caracteres") String nombreEmpresa) {
-        this.nombreEmpresa = nombreEmpresa;
+    public void setCorreo(String correo) {
+        this.correo = correo;
     }
 
-    public @NotBlank(message = "La direccion de empresa es obligatoria") @Size(min = 2, max = 100, message = "La direccion de empresa debe tener entre 2 y 100 caracteres") String getDireccionEmpresa() {
-        return direccionEmpresa;
+    public String getTelefono() {
+        return telefono;
     }
 
-    public void setDireccionEmpresa(@NotBlank(message = "La direccion de empresa es obligatoria") @Size(min = 2, max = 100, message = "La direccion de empresa debe tener entre 2 y 100 caracteres") String direccionEmpresa) {
-        this.direccionEmpresa = direccionEmpresa;
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public Integer getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Integer estado) {
+        this.estado = estado;
     }
 }

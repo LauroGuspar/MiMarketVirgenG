@@ -77,11 +77,9 @@ public class Usuario {
     @JoinColumn(name = "id_rol")
     private Rol rol;
 
-    // Constructor por defecto
     public Usuario() {
     }
 
-    // Constructor con parámetros
     public Usuario(String nombre, String usuario,String apellidoPaterno,String apellidoMaterno,String correo, String clave,String telefono, String direccion,String ndocumento,TipoDocumento tipodocumento, Rol rol) {
         this.nombre = nombre;
         this.usuario = usuario;
@@ -97,7 +95,6 @@ public class Usuario {
         this.rol= rol;
     }
 
-    // Getters y Setters
     public Long getId() {
         return id;
     }

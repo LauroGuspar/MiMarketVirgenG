@@ -12,7 +12,6 @@ $(document).ready(function () {
         delete: (id) => `${API_BASE}/eliminar/${id}`
     };
 
-    // --- Inicialización ---
     initializeDataTable();
     unidadModal = new bootstrap.Modal(document.getElementById('unidadModal'));
     setupEventListeners();

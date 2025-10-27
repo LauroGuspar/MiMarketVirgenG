@@ -44,6 +44,11 @@
 			<artifactId>spring-security-crypto</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+
 		<!-- Base de datos H2 para desarrollo -->
 		<dependency>
 			<groupId>com.h2database</groupId>

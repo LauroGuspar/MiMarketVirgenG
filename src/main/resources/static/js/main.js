@@ -3,7 +3,7 @@
  * Archivo: src/main/resources/static/js/main.js
  */
 
-$(document).ready(function() {
+$(document).ready(function () {
     /**
      * Configura la interactividad del sidebar responsivo.
      */
@@ -13,7 +13,7 @@ $(document).ready(function() {
         const closeSidebarBtn = $('#close-sidebar');
         const sidebarOverlay = $('#sidebar-overlay');
 
-        openSidebarBtn.on('click', function() {
+        openSidebarBtn.on('click', function () {
             sidebar.addClass('active');
             sidebarOverlay.addClass('active');
         });
@@ -27,6 +27,5 @@ $(document).ready(function() {
         sidebarOverlay.on('click', closeSidebar);
     }
 
-    // Inicializar la funcionalidad del sidebar en cada carga de página.
     setupSidebar();
 });

@@ -2,10 +2,14 @@ package com.sistema.productos.service.Impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Objects;
+import java.util.Random;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import com.sistema.productos.model.Usuario;
 import com.sistema.productos.repository.UsuarioRepository;
@@ -16,6 +20,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 
     private final UsuarioRepository usuarioRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+
 
     public UsuarioServiceImpl(UsuarioRepository usuarioRepository, BCryptPasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
@@ -31,62 +36,89 @@ public class UsuarioServiceImpl implements UsuarioService{
     @Override
     @Transactional
     public Usuario guardarUsuario(Usuario usuario) {
-        if (usuario.getId() == null) {
-            Optional<Usuario> existentePorDoc = usuarioRepository.findByTipodocumento_IdAndNdocumento(
-                usuario.getTipodocumento().getId(), usuario.getNdocumento());
+        if (usuario.getCorreo() != null) usuario.setCorreo(usuario.getCorreo().trim());
+        if (usuario.getTelefono() != null) usuario.setTelefono(usuario.getTelefono().trim());
+        if (usuario.getNdocumento() != null) usuario.setNdocumento(usuario.getNdocumento().trim());
 
-            if (existentePorDoc.isPresent()) {
-                Usuario existente = existentePorDoc.get();
-                if (existente.getEstado() == 2) {
-                    Optional<Usuario> porUsuario = usuarioRepository.findByUsuarioIgnoreCase(usuario.getUsuario());
-                    if (porUsuario.isPresent() && !porUsuario.get().getId().equals(existente.getId())) {
-                        throw new IllegalArgumentException("El nombre de usuario ya está en uso por otra cuenta activa.");
-                    }
-                    Optional<Usuario> porCorreo = usuarioRepository.findByCorreoIgnoreCase(usuario.getCorreo());
-                    if (porCorreo.isPresent() && !porCorreo.get().getId().equals(existente.getId())) {
-                        throw new IllegalArgumentException("El correo electrónico ya está en uso por otra cuenta activa.");
-                    }
-
-                    existente.setEstado(1);
-                    existente.setNombre(usuario.getNombre());
-                    existente.setUsuario(usuario.getUsuario());
-                    existente.setCorreo(usuario.getCorreo());
-                    existente.setApellidoPaterno(usuario.getApellidoPaterno());
-                    existente.setApellidoMaterno(usuario.getApellidoMaterno());
-                    existente.setTelefono(usuario.getTelefono());
-                    existente.setDireccion(usuario.getDireccion());
-                    existente.setRol(usuario.getRol());
-                    existente.setClave(passwordEncoder.encode(usuario.getClave().trim()));
-                    
-                    return usuarioRepository.save(existente);
-                } else {
-                    throw new IllegalArgumentException("Ya existe un usuario registrado con este tipo y número de documento.");
+        try {
+            if (usuario.getId() == null) {
+                if (usuarioRepository.existsByTipodocumento_IdAndNdocumento(usuario.getTipodocumento().getId(), usuario.getNdocumento())) {
+                     throw new IllegalArgumentException("Ya existe un usuario (activo o inactivo) con el documento " + usuario.getNdocumento() + ".");
                 }
-            }
+                String generatedUsuario = generarNombreUsuario(usuario.getNombre(), usuario.getApellidoPaterno());
+                usuario.setUsuario(generatedUsuario);
+                String generatedClave = RandomStringUtils.randomAlphanumeric(10);
+                usuario.setClave(passwordEncoder.encode(generatedClave));
+                verificarConflictosUnicosNuevoUsuario(usuario);
+                usuario.setEstado(1);
+                System.out.println("Nuevo usuario creado: " + usuario.getUsuario() + ", Clave Temporal: " + generatedClave);
+                return usuarioRepository.save(usuario);
 
-            if (usuarioRepository.findByUsuarioIgnoreCase(usuario.getUsuario()).isPresent()) {
-                throw new IllegalArgumentException("El nombre de usuario ya está registrado.");
-            }
-            if (usuarioRepository.findByCorreoIgnoreCase(usuario.getCorreo()).isPresent()) {
-                throw new IllegalArgumentException("El correo electrónico ya está registrado.");
-            }
-            
-            usuario.setClave(passwordEncoder.encode(usuario.getClave().trim()));
-            usuario.setEstado(1);
-            return usuarioRepository.save(usuario);
-        }
-        else {
-             Usuario existente = usuarioRepository.findById(usuario.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado para actualizar"));
-            
-            if (usuario.getClave() == null || usuario.getClave().trim().isEmpty()) {
-                usuario.setClave(existente.getClave());
             } else {
-                usuario.setClave(passwordEncoder.encode(usuario.getClave().trim()));
+                Usuario existente = usuarioRepository.findById(usuario.getId())
+                        .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + usuario.getId()));
+                verificarConflictosUnicosActualizarUsuario(usuario, existente);
+                existente.setCorreo(usuario.getCorreo());
+                existente.setTelefono(usuario.getTelefono());
+                existente.setRol(usuario.getRol());
+                return usuarioRepository.save(existente);
             }
-             return usuarioRepository.save(usuario);
+        } catch (IllegalArgumentException e) {
+             throw e;
+        } catch (DataIntegrityViolationException e) {
+            String message = "Error de base de datos. Es posible que un campo único ya exista.";
+            if (e.getMessage().contains("emple_nombreuser")) message = "El nombre de usuario ya existe.";
+            else if (e.getMessage().contains("emple_correo")) message = "El correo electrónico ya existe.";
+            else if (e.getMessage().contains("emple_telefono")) message = "El número de teléfono ya existe.";
+            else if (e.getMessage().contains("emple_ndocumento")) message = "El número de documento ya existe.";
+             System.err.println("DataIntegrityViolationException: " + e.getMessage());
+            throw new IllegalArgumentException(message, e);
+        } catch (Exception e) {
+             System.err.println("Error inesperado en guardarUsuario: " + e.getMessage());
+            throw new RuntimeException("Ocurrió un error inesperado al guardar el usuario.", e);
         }
     }
+
+    private String generarNombreUsuario(String nombre, String apellidoPaterno) {
+        if (nombre == null || nombre.trim().isEmpty() || apellidoPaterno == null || apellidoPaterno.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nombre y Apellido Paterno son requeridos para generar el usuario.");
+        }
+        String baseUsuario = (nombre.trim().substring(0, 1) + apellidoPaterno.trim()).toLowerCase().replaceAll("\\s+", "");
+        String usuarioFinal = baseUsuario;
+        int counter = 1;
+        while (usuarioRepository.existsByUsuarioIgnoreCase(usuarioFinal)) {
+            usuarioFinal = baseUsuario + counter;
+            counter++;
+        }
+        return usuarioFinal;
+    }
+
+     private void verificarConflictosUnicosNuevoUsuario(Usuario usuario) {
+         if (usuario.getCorreo() != null && !usuario.getCorreo().isBlank() && usuarioRepository.existsByCorreoIgnoreCase(usuario.getCorreo())) {
+             throw new IllegalArgumentException("El correo electrónico '" + usuario.getCorreo() + "' ya está registrado.");
+         }
+         if (usuario.getTelefono() != null && !usuario.getTelefono().isBlank() && usuarioRepository.existsByTelefonoIgnoreCase(usuario.getTelefono())) {
+             throw new IllegalArgumentException("El número de teléfono '" + usuario.getTelefono() + "' ya está registrado.");
+         }
+     }
+
+     private void verificarConflictosUnicosActualizarUsuario(Usuario usuarioActualizado, Usuario usuarioExistente) {
+         Long idActual = usuarioExistente.getId();
+         if (usuarioActualizado.getCorreo() != null && !usuarioActualizado.getCorreo().isBlank() &&
+             !usuarioExistente.getCorreo().equalsIgnoreCase(usuarioActualizado.getCorreo())) {
+             Optional<Usuario> otroConCorreo = usuarioRepository.findByCorreoIgnoreCase(usuarioActualizado.getCorreo());
+             if (otroConCorreo.isPresent() && !Objects.equals(otroConCorreo.get().getId(), idActual) && otroConCorreo.get().getEstado() != 2) {
+                 throw new IllegalArgumentException("El correo electrónico '" + usuarioActualizado.getCorreo() + "' ya está registrado por otro usuario.");
+             }
+         }
+         if (usuarioActualizado.getTelefono() != null && !usuarioActualizado.getTelefono().isBlank() &&
+             !usuarioExistente.getTelefono().equalsIgnoreCase(usuarioActualizado.getTelefono())) {
+             Optional<Usuario> otroConTelefono = usuarioRepository.findByTelefonoIgnoreCase(usuarioActualizado.getTelefono());
+             if (otroConTelefono.isPresent() && !Objects.equals(otroConTelefono.get().getId(), idActual) && otroConTelefono.get().getEstado() != 2) {
+                 throw new IllegalArgumentException("El número de teléfono '" + usuarioActualizado.getTelefono() + "' ya está registrado por otro usuario.");
+             }
+         }
+     }
 
     @Override
     @Transactional(readOnly = true)
@@ -113,12 +145,12 @@ public class UsuarioServiceImpl implements UsuarioService{
     @Transactional
     public void eliminarUsuario(Long id) {
         if (id == null || id <= 0) {
-            throw new IllegalArgumentException("ID de usuario inválido");
+            throw new IllegalArgumentException("ID de usuario inválido: " + id);
         }
-        Usuario usuario = obtenerUsuarioPorId(id)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+        Usuario usuario = obtenerUsuarioPorId(id).orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado con ID: " + id));
         usuario.setEstado(2);
         usuarioRepository.save(usuario);
+        System.out.println("Usuario ID " + id + " marcado como eliminado.");
     }
 
     @Override
@@ -147,14 +179,14 @@ public class UsuarioServiceImpl implements UsuarioService{
     @Transactional(readOnly = true)
     public boolean existeUsuario(String nombreUsuario) {
         if (nombreUsuario == null || nombreUsuario.trim().isEmpty()) return false;
-        return usuarioRepository.existsByUsuario(nombreUsuario.trim().toLowerCase());
+        return usuarioRepository.existsByUsuarioIgnoreCase(nombreUsuario);
     }
 
     @Override
     @Transactional(readOnly = true)
     public boolean existeCorreo(String correo) {
         if (correo == null || correo.trim().isEmpty()) return false;
-        return usuarioRepository.existsByCorreo(correo.trim().toLowerCase());
+        return usuarioRepository.existsByCorreoIgnoreCase(correo);
     }
 
     @Override

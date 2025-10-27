@@ -56,7 +56,7 @@ $(document).ready(function () {
         $('#tablaUsuarios tbody').on('click', '.action-delete', handleDelete);
 
         $('#id_tipodocumento').on('change', function () {
-            const selectedText = $(this).find('option:selected').text();
+            const selectedText = 'DNI';
             const ndocumentoInput = $('#ndocumento');
             const rule = ValidacionTDocumento[selectedText];
 
@@ -65,14 +65,7 @@ $(document).ready(function () {
                 ndocumentoInput.attr('placeholder', `${rule.length} dígitos`);
                 ndocumentoInput.data('expected-length', rule.length);
                 ndocumentoInput.data('validation-message', rule.message);
-            } else {
-                ndocumentoInput.removeAttr('maxlength');
-                ndocumentoInput.attr('placeholder', 'N° de Documento');
-                ndocumentoInput.removeData('expected-length');
-                ndocumentoInput.removeData('validation-message');
             }
-            ndocumentoInput.val('');
-            validarNumeroDocumento();
         });
 
         $('#ndocumento').on('input', function () {
@@ -83,6 +76,7 @@ $(document).ready(function () {
             this.value = this.value.replace(/[^0-9]/g, '');
             validarTelefono();
         });
+
         $('#btnBuscarReniec').on('click', async function () {
             const dni = $('#ndocumento').val().trim();
             const selectedText = $('#id_tipodocumento').find('option:selected').text();
@@ -100,7 +94,6 @@ $(document).ready(function () {
                 if (result.success && result.data && result.data.datos) {
                     const datos = result.data.datos;
 
-                    // Autocompletar campos del formulario de Usuarios
                     $('#nombre').val(datos.nombres || '');
                     $('#apellidoPaterno').val(datos.ape_paterno || '');
                     $('#apellidoMaterno').val(datos.ape_materno || '');
@@ -112,8 +105,13 @@ $(document).ready(function () {
                             .join(', ');
                         $('#direccion').val(direccionCompleta);
                     }
+                    $('#nombre').prop('disabled', true);
+                    $('#apellidoPaterno').prop('disabled', true);
+                    $('#apellidoMaterno').prop('disabled', true);
+                    $('#direccion').prop('disabled', true);
                 } else {
                     Swal.fire('No encontrado', result.message || 'No se encontraron datos para este DNI', 'info');
+                    $('#nombre, #apellidoPaterno, #apellidoMaterno, #direccion').val('').prop('disabled', true);
                 }
             } catch (error) {
                 console.error('Error al buscar en RENIEC:', error);
@@ -186,22 +184,27 @@ $(document).ready(function () {
         const isDocumentoValid = validarNumeroDocumento();
         const isTelefonoValid = validarTelefono();
 
-        if (!isDocumentoValid || !isTelefonoValid) {
-            AppUtils.showNotification('Por favor, corrige los errores en el formulario.', 'error');
+        if (!isDocumentoValid || (!isTelefonoValid && $('#telefono').val())) {
+            if (!isDocumentoValid) {
+                AppUtils.showNotification('El número de documento no es válido.', 'error');
+            } else {
+                AppUtils.showNotification('El número de teléfono no es válido.', 'error');
+            }
             return;
         }
 
         const formData = {
-            id: $('#id').val() || null, nombre: $('#nombre').val().trim(),
-            usuario: $('#usuario').val().trim(), apellidoPaterno: $('#apellidoPaterno').val().trim(),
-            apellidoMaterno: $('#apellidoMaterno').val().trim(), correo: $('#correo').val().trim(),
-            telefono: $('#telefono').val().trim(), direccion: $('#direccion').val().trim(),
-            ndocumento: $('#ndocumento').val().trim(), clave: $('#clave').val(),
+            id: $('#id').val() || null,
+            nombre: $('#nombre').val().trim(),
+            apellidoPaterno: $('#apellidoPaterno').val().trim(),
+            apellidoMaterno: $('#apellidoMaterno').val().trim(),
+            direccion: $('#direccion').val().trim(),
+            ndocumento: $('#ndocumento').val().trim(),
             tipodocumento: { id: $('#id_tipodocumento').val() },
+            correo: $('#correo').val().trim(),
+            telefono: $('#telefono').val().trim(),
             rol: { id: $('#id_rol').val() }
         };
-
-        if (isEditing && !formData.clave) { delete formData.clave; }
 
         AppUtils.showLoading(true);
         fetch(ENDPOINTS.save, {
@@ -217,10 +220,13 @@ $(document).ready(function () {
                 } else {
                     if (data.errors) {
                         Object.keys(data.errors).forEach(field => $(`#${field}-error`).text(data.errors[field]));
-                    } else { AppUtils.showNotification(data.message, 'error'); }
+                        AppUtils.showNotification('Datos inválidos.', 'error');
+                    } else {
+                        AppUtils.showNotification(data.message, 'error');
+                    }
                 }
             })
-            .catch(error => AppUtils.showNotification('Error de conexión', 'error'))
+            .catch(error => AppUtils.showNotification('Error de conexión al guardar.', 'error'))
             .finally(() => AppUtils.showLoading(false));
     }
 
@@ -230,8 +236,9 @@ $(document).ready(function () {
         fetch(ENDPOINTS.get(id))
             .then(response => response.json())
             .then(data => {
-                if (data.success) { openModalForEdit(data.data); }
-                else { AppUtils.showNotification('Error al cargar usuario', 'error'); }
+                if (data.success) {
+                    openModalForEdit(data.data);
+                } else { AppUtils.showNotification('Error al cargar usuario', 'error'); }
             })
             .catch(error => AppUtils.showNotification('Error de conexión', 'error'))
             .finally(() => AppUtils.showLoading(false));
@@ -274,24 +281,28 @@ $(document).ready(function () {
     function openModalForNew() {
         isEditing = false;
         AppUtils.clearForm(formId);
-        $('#id_tipodocumento').val('1').trigger('change');
-
-        const ndocumentoInput = $('#ndocumento');
-        ndocumentoInput.attr('placeholder', '8 dígitos');
-        ndocumentoInput.removeData('validation-message');
-
         $('#modalTitle').text('Agregar Usuario');
+        $('#id_tipodocumento').prop('disabled', false);
+        $('#ndocumento').prop('disabled', false);
+        $('#btnBuscarReniec').prop('disabled', false);
+        $('#correo').prop('disabled', false);
+        $('#telefono').prop('disabled', false);
+        $('#id_rol').prop('disabled', false);
+        $('#nombre').prop('disabled', true);
+        $('#apellidoPaterno').prop('disabled', true);
+        $('#apellidoMaterno').prop('disabled', true);
+        $('#direccion').prop('disabled', true);
+        $('#id_tipodocumento').val('1').trigger('change');
+        $('#ndocumento').attr('placeholder', '8 dígitos');
+
         usuarioModal.show();
     }
 
     function openModalForEdit(usuario) {
         isEditing = true;
-        clearForm(formId); // Usando la función local
         $('#modalTitle').text('Editar Usuario');
-
         $('#id').val(usuario.id);
         $('#nombre').val(usuario.nombre);
-        $('#usuario').val(usuario.usuario);
         $('#apellidoPaterno').val(usuario.apellidoPaterno);
         $('#apellidoMaterno').val(usuario.apellidoMaterno);
         $('#correo').val(usuario.correo);
@@ -299,9 +310,17 @@ $(document).ready(function () {
         $('#direccion').val(usuario.direccion);
         $('#ndocumento').val(usuario.ndocumento);
         $('#id_rol').val(usuario.rol ? usuario.rol.id : '');
-        $('#clave').attr('placeholder', 'Dejar en blanco para no cambiar');
-        $('#id_tipodocumento').val('1').trigger('change');
-        $('#ndocumento').val(usuario.ndocumento);
+        $('#id_tipodocumento').val(usuario.tipodocumento ? usuario.tipodocumento.id : '1');
+        $('#id_tipodocumento').prop('disabled', true);
+        $('#ndocumento').prop('disabled', true);
+        $('#btnBuscarReniec').prop('disabled', true);
+        $('#nombre').prop('disabled', true);
+        $('#apellidoPaterno').prop('disabled', true);
+        $('#apellidoMaterno').prop('disabled', true);
+        $('#direccion').prop('disabled', true);
+        $('#correo').prop('disabled', false);
+        $('#telefono').prop('disabled', false);
+        $('#id_rol').prop('disabled', false);
 
         usuarioModal.show();
     }

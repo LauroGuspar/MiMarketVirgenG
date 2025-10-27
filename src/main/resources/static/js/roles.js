@@ -15,7 +15,6 @@ $(document).ready(function () {
         options: `${API_BASE}/opciones`
     };
 
-    // Inicializar Componentes
     initializeDataTable();
     rolModal = new bootstrap.Modal(document.getElementById('rolModal'));
     permisosModal = new bootstrap.Modal(document.getElementById('permisosModal'));

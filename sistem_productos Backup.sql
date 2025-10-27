@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 26-10-2025 a las 19:04:41
+-- Tiempo de generación: 26-10-2025 a las 20:04:01
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -63,11 +63,11 @@ CREATE TABLE `categoria_tipo_producto` (
 
 CREATE TABLE `cliente` (
   `id_cliente` bigint(20) NOT NULL,
-  `cli_nombre` varchar(100),
-  `cli_apellido_paterno` varchar(100),
-  `cli_apellido_materno` varchar(100),
-  `cli_correo` varchar(60),
-  `cli_telefono` char(9),
+  `cli_nombre` varchar(100) DEFAULT NULL,
+  `cli_apellido_paterno` varchar(100) DEFAULT NULL,
+  `cli_apellido_materno` varchar(100) DEFAULT NULL,
+  `cli_correo` varchar(60) DEFAULT NULL,
+  `cli_telefono` char(9) DEFAULT NULL,
   `cli_estado` int(11) NOT NULL DEFAULT 1,
   `cli_direccion` varchar(100) NOT NULL,
   `cli_ndocumento` varchar(20) NOT NULL,
@@ -208,10 +208,10 @@ CREATE TABLE `marca` (
 --
 
 INSERT INTO `marca` (`id_marca`, `marca_nombre`, `marca_fecha`, `marca_estado`) VALUES
-(1, 'Marca01', '2025-10-13 00:00:00', 1),
-(2, 'Marca02', '2025-10-13 00:00:00', 1),
-(3, 'Marca03', '2025-10-13 00:00:00', 1),
-(4, 'Marca04', '2025-10-13 00:00:00', 2);
+(1, 'Marca01', '2025-10-13', 1),
+(2, 'Marca02', '2025-10-13', 1),
+(3, 'Marca03', '2025-10-13', 1),
+(4, 'Marca04', '2025-10-13', 2);
 
 -- --------------------------------------------------------
 
@@ -240,15 +240,18 @@ INSERT INTO `opcion` (`id_opcion`, `opcion_nombre`, `opcion_ruta`, `opcion_icon`
 (7, 'Marcas', '/productos/marcas/listar', NULL),
 (8, 'Unidad', '/productos/unidad/listar', NULL),
 (9, 'Tipo de Productos', '/productos/tipos-producto/listar', NULL),
-(10, 'Listado', '/compras//listar', NULL),
+(10, 'Compras', '/compras/listar', NULL),
 (11, 'Proovedores', '/compras/proovedor/listar', NULL),
 (12, 'Ordenes de Compra', '/compras/ordenes/listar', NULL),
-(13, 'Movimientos', '/inventarios/movimientos/listar', NULL),
-(14, 'Traslados', '/inventarios/traslados/listar', NULL),
-(15, 'Devolucion A Proovedor', '/inventarios/devolucion/listar', NULL),
-(16, 'Pedidos', '/tiendavirtual/pedidos/listar', NULL),
-(17, 'Productos Tienda V.', '/tiendavirtual/productos/listar', NULL),
-(18, 'Tags-Categorias', '/tiendavirtual/tags/listar', NULL);
+(13, 'Listado de Ventas', '/ventas/listar', NULL),
+(14, 'Nuevo Comprobante', '/ventas/comprobante/nuevo', NULL),
+(15, 'Punto de Venta', '/ventas/punto-venta/nuevo', NULL),
+(16, 'Movimientos', '/inventarios/movimientos/listar', NULL),
+(17, 'Traslados', '/inventarios/traslados/listar', NULL),
+(18, 'Devolucion A Proovedor', '/inventarios/devolucion/listar', NULL),
+(19, 'Pedidos', '/tiendavirtual/pedidos/listar', NULL),
+(20, 'Productos Tienda V.', '/tiendavirtual/productos/listar', NULL),
+(21, 'Tags-Categorias', '/tiendavirtual/tags/listar', NULL);
 
 -- --------------------------------------------------------
 
@@ -281,7 +284,7 @@ CREATE TABLE `producto` (
   `produc_nombre` varchar(100) NOT NULL,
   `produc_codigo` varchar(50) NOT NULL,
   `produc_descripcion` varchar(150) NOT NULL,
-  `produc_precio` decimal(10,0) DEFAULT 0 Not null,
+  `produc_precio` decimal(10,0) NOT NULL,
   `produc_fecha_creacion` date DEFAULT NULL,
   `produc_fecha_vencimiento` date DEFAULT NULL,
   `produc_stock` int(11) DEFAULT 0,
@@ -334,7 +337,8 @@ CREATE TABLE `rol` (
 INSERT INTO `rol` (`id_rol`, `rol_nombre`, `rol_descripcion`, `rol_estado`) VALUES
 (1, 'Administrador', 'Acceso total al sistema.', 1),
 (2, 'Editor', 'Puede gestionar usuarios pero no Roles.', 1),
-(3, 'Supervisor', 'Solo puede visualizar información.', 1);
+(3, 'Supervisor', 'Solo puede visualizar información.', 1),
+(4, 'Empleado', '', 1);
 
 -- --------------------------------------------------------
 
@@ -369,9 +373,17 @@ INSERT INTO `rol_opcion` (`id_rol`, `id_opcion`) VALUES
 (1, 15),
 (1, 16),
 (1, 17),
+(1, 18),
+(1, 19),
+(1, 20),
+(1, 21),
 (2, 1),
 (2, 2),
-(3, 1);
+(3, 1),
+(4, 13),
+(4, 14),
+(4, 15),
+(4, 19);
 
 -- --------------------------------------------------------
 
@@ -392,7 +404,7 @@ CREATE TABLE `tipo_documento` (
 INSERT INTO `tipo_documento` (`id_tipodocumento`, `tipodoc_nombre`, `tipodoc_estado`) VALUES
 (1, 'DNI', 1),
 (2, 'RUC', 1),
-(3, 'Carné de Extranjería', 1);
+(3, 'Carné de Extranjería', 2);
 
 -- --------------------------------------------------------
 
@@ -715,7 +727,7 @@ ALTER TABLE `proveedor`
 -- AUTO_INCREMENT de la tabla `rol`
 --
 ALTER TABLE `rol`
-  MODIFY `id_rol` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_rol` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo_documento`

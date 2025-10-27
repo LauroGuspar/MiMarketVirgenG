@@ -59,8 +59,6 @@ $(document).ready(function () {
         $('#tablaCategorias tbody').on('click', '.action-edit', handleEdit);
         $('#tablaCategorias tbody').on('click', '.action-status', handleToggleStatus);
         $('#tablaCategorias tbody').on('click', '.action-delete', handleDelete);
-
-        // NUEVO: Event listener para previsualizar la imagen seleccionada
         $('#imagenFile').on('change', function () {
             if (this.files && this.files[0]) {
                 const reader = new FileReader();
@@ -98,7 +96,7 @@ $(document).ready(function () {
         AppUtils.showLoading(true);
         fetch(ENDPOINTS.save, {
             method: 'POST',
-            body: formData // No se especifica Content-Type, el navegador lo hace por nosotros
+            body: formData
         })
             .then(response => response.json())
             .then(data => {
@@ -181,7 +179,6 @@ $(document).ready(function () {
         isEditing = false;
         AppUtils.clearForm(formid);
         $('#modalTitle').text('Agregar Categoría');
-        // MODIFICADO: Resetea la vista previa de la imagen
         $('#imagenPreview').attr('src', '/images/placeholder.png').show();
         $('#imagenFile').val('');
         categoriaModal.show();
@@ -193,8 +190,6 @@ $(document).ready(function () {
         $('#modalTitle').text('Editar Categoría');
         $('#id').val(categoria.id);
         $('#nombre').val(categoria.nombre);
-
-        // MODIFICADO: Muestra la imagen actual o un placeholder
         const imageUrl = categoria.img ? `/categorias/${categoria.img}` : '/images/placeholder.png';
         $('#imagenPreview').attr('src', imageUrl).show();
         $('#imagenFile').val('');

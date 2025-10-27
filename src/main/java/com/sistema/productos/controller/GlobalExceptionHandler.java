@@ -1,4 +1,3 @@
-// Define el paquete al que pertenece la clase.
 package com.sistema.productos.controller;
 
 import org.slf4j.Logger;
