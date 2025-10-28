@@ -8,11 +8,9 @@
         class="sidebar d-flex flex-column flex-shrink-0 p-3 pe-2 text-sidebar-color"
       >
         <div class="d-flex align-items-center justify-content-between mb-3">
-          <a
-            th:href="@{/}"
-            class="fs-4 text-sidebar-color text-decoration-none fw-bold"
-            >Mi Market</a
-          >
+          <a th:href="@{/}" class="d-flex align-items-center text-sidebar-color text-decoration-none fw-bold fs-4">
+     <img th:src="@{/images/Virgenlogo.png}" alt="Mi Market Logo" height="40" class="me-2 rounded"> <span>Mi Market</span> </a>
+          
           <button id="close-sidebar" class="btn btn-dark d-md-none p-0">
             <svg
               xmlns="http://www.w3.org/2000/svg"
