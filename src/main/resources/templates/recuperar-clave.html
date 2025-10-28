@@ -16,11 +16,24 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
     />
-    <link th:href="@{/css/login.css}" rel="stylesheet" />
+    <link th:href="@{/css/recuperar-clave.css}" rel="stylesheet" />
     <link th:href="@{/css/main.css}" rel="stylesheet" />
   </head>
   <body>
     <div class="login-container">
+      <!-- Logo agregado -->
+      <div class="text-center mb-4">
+        <img
+          th:src="@{/images/Virgenlogo.png}"
+          src="../images/Virgenlogo.png"
+          alt="Logo Mi Market Virgen de Guadalupe"
+          class="logo"
+        />
+        <h1 class="brand-name mt-3">
+          Mi Market Virgen<br />De Guadalupe
+        </h1>
+      </div>
+
       <div class="card login-card p-4">
         <div class="card-body">
           <div class="text-center mb-4">
