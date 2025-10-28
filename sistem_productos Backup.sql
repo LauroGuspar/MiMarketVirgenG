@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 26-10-2025 a las 20:04:01
+-- Tiempo de generación: 27-10-2025 a las 08:08:26
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -55,6 +55,13 @@ CREATE TABLE `categoria_tipo_producto` (
   `id_tipoproducto` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `categoria_tipo_producto`
+--
+
+INSERT INTO `categoria_tipo_producto` (`id_categoria`, `id_tipoproducto`) VALUES
+(1, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -75,6 +82,13 @@ CREATE TABLE `cliente` (
   `cli_direccion_empresa` varchar(100) DEFAULT NULL,
   `id_tipodocumento` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `cliente`
+--
+
+INSERT INTO `cliente` (`id_cliente`, `cli_nombre`, `cli_apellido_paterno`, `cli_apellido_materno`, `cli_correo`, `cli_telefono`, `cli_estado`, `cli_direccion`, `cli_ndocumento`, `cli_nombre_empresa`, `cli_direccion_empresa`, `id_tipodocumento`) VALUES
+(1, 'ROGER PAUL', 'VELASCO', 'ZAPATA', NULL, NULL, 1, 'CALLE SANTA ROSA 355, CHICLAYO, CHICLAYO, LAMBAYEQUE', '72934888', NULL, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -418,6 +432,13 @@ CREATE TABLE `tipo_producto` (
   `tipoproducto_estado` int(11) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `tipo_producto`
+--
+
+INSERT INTO `tipo_producto` (`id_tipoproducto`, `tipoproducto_nombre`, `tipoproducto_estado`) VALUES
+(1, 'Prueba01', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -655,7 +676,7 @@ ALTER TABLE `categoria`
 -- AUTO_INCREMENT de la tabla `cliente`
 --
 ALTER TABLE `cliente`
-  MODIFY `id_cliente` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_cliente` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `compania_transporte`
@@ -685,7 +706,7 @@ ALTER TABLE `direccion_entrega`
 -- AUTO_INCREMENT de la tabla `empleado`
 --
 ALTER TABLE `empleado`
-  MODIFY `id_empleado` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_empleado` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `forma_pago`
@@ -703,7 +724,7 @@ ALTER TABLE `marca`
 -- AUTO_INCREMENT de la tabla `opcion`
 --
 ALTER TABLE `opcion`
-  MODIFY `id_opcion` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id_opcion` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT de la tabla `orden`
@@ -715,7 +736,7 @@ ALTER TABLE `orden`
 -- AUTO_INCREMENT de la tabla `producto`
 --
 ALTER TABLE `producto`
-  MODIFY `id_producto` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_producto` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `proveedor`
@@ -739,7 +760,7 @@ ALTER TABLE `tipo_documento`
 -- AUTO_INCREMENT de la tabla `tipo_producto`
 --
 ALTER TABLE `tipo_producto`
-  MODIFY `id_tipoproducto` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_tipoproducto` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo_venta`

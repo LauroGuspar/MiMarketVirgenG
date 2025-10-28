@@ -44,7 +44,27 @@ $(document).ready(function () {
                     render: (data, type, row) => AppUtils.createActionButtons(row)
                 }
             ],
-            language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json" }
+            language: {
+                "processing": "Procesando...",
+                "lengthMenu": "Mostrar _MENU_ registros",
+                "zeroRecords": "No se encontraron resultados",
+                "emptyTable": "Ningún dato disponible en esta tabla",
+                "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                "infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                "infoFiltered": "(filtrado de un total de _MAX_ registros)",
+                "search": "Buscar:",
+                "loadingRecords": "Cargando...",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                },
+                "aria": {
+                    "sortAscending": ": Activar para ordenar la columna de manera ascendente",
+                    "sortDescending": ": Activar para ordenar la columna de manera descendente"
+                }
+            }
         });
     }
 
@@ -298,19 +318,20 @@ $(document).ready(function () {
         usuarioModal.show();
     }
 
-    function openModalForEdit(usuario) {
+    function openModalForEdit(usuarioDTO) {
         isEditing = true;
+        AppUtils.clearForm(formId)
         $('#modalTitle').text('Editar Usuario');
-        $('#id').val(usuario.id);
-        $('#nombre').val(usuario.nombre);
-        $('#apellidoPaterno').val(usuario.apellidoPaterno);
-        $('#apellidoMaterno').val(usuario.apellidoMaterno);
-        $('#correo').val(usuario.correo);
-        $('#telefono').val(usuario.telefono);
-        $('#direccion').val(usuario.direccion);
-        $('#ndocumento').val(usuario.ndocumento);
-        $('#id_rol').val(usuario.rol ? usuario.rol.id : '');
-        $('#id_tipodocumento').val(usuario.tipodocumento ? usuario.tipodocumento.id : '1');
+        $('#id').val(usuarioDTO.id);
+        $('#nombre').val(usuarioDTO.nombre);
+        $('#apellidoPaterno').val(usuarioDTO.apellidoPaterno);
+        $('#apellidoMaterno').val(usuarioDTO.apellidoMaterno);
+        $('#correo').val(usuarioDTO.correo);
+        $('#telefono').val(usuarioDTO.telefono);
+        $('#direccion').val(usuarioDTO.direccion);
+        $('#ndocumento').val(usuarioDTO.ndocumento);
+        $('#id_rol').val(usuarioDTO.id_rol);
+        $('#id_tipodocumento').val('1');
         $('#id_tipodocumento').prop('disabled', true);
         $('#ndocumento').prop('disabled', true);
         $('#btnBuscarReniec').prop('disabled', true);

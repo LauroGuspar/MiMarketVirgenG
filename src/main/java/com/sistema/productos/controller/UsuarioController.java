@@ -115,22 +115,25 @@ public class UsuarioController {
     }
 
     @GetMapping("/api/{id}")
-    @ResponseBody
-    public ResponseEntity<?> obtenerUsuario(@PathVariable Long id) {
-        try {
-            return usuarioService.obtenerUsuarioPorId(id).map(usuario -> {
+@ResponseBody
+public ResponseEntity<?> obtenerUsuario(@PathVariable Long id) {
+    try {
+        return usuarioService.obtenerUsuarioDTOPorId(id)
+            .map(usuarioDTO -> {
                 Map<String, Object> response = new HashMap<>();
                 response.put("success", true);
-                response.put("data", usuario);
+                response.put("data", usuarioDTO);
                 return ResponseEntity.ok(response);
-            }).orElse(ResponseEntity.notFound().build());
-        } catch (Exception e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", false);
-            response.put("message", "Error al obtener usuario: " + e.getMessage());
-            return ResponseEntity.internalServerError().body(response);
-        }
+            })
+            .orElse(ResponseEntity.notFound().build());
+    } catch (Exception e) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", false);
+        response.put("message", "Error al obtener usuario: " + e.getMessage());
+        System.err.println("Error en obtenerUsuario Controller: " + e.getMessage());
+        return ResponseEntity.internalServerError().body(response);
     }
+}
 
     @DeleteMapping("/api/eliminar/{id}")
     @ResponseBody

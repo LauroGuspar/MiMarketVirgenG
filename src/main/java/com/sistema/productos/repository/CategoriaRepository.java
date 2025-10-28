@@ -19,6 +19,6 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
     @Modifying
     @Query("UPDATE Categoria c SET c.estado = :nuevoEstado WHERE c.id = :id")
     void actualizarEstado(Long id, Integer nuevoEstado);
-
+    
     boolean existsByNombre(String nombre);
 }

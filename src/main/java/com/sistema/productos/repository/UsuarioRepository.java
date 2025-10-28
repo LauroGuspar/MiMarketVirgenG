@@ -24,7 +24,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     boolean existsByTipodocumento_IdAndNdocumento(Long tipodocumentoId, String ndocumento);
     List<Usuario> findAllByEstadoNot(Integer estado);
     long countByEstadoNot(Integer estado);
+    Optional<Usuario> findByNdocumentoAndCorreoIgnoreCase(String ndocumento, String correo);
     @Modifying
     @Query("UPDATE Usuario u SET u.estado = :nuevoEstado WHERE u.id = :id")
     void actualizarEstado(Long id, Integer nuevoEstado);
+    Optional<Usuario> findByTokenReseteo(String tokenReseteo);
 }

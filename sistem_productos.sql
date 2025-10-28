@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 27-10-2025 a las 08:08:26
+-- Tiempo de generación: 28-10-2025 a las 05:50:45
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -176,21 +176,23 @@ CREATE TABLE `empleado` (
   `emple_apellido_paterno` varchar(100) NOT NULL,
   `emple_apellido_materno` varchar(100) NOT NULL,
   `emple_correo` varchar(60) NOT NULL,
-  `emple_contrasena` varchar(150) NOT NULL,
+  `emple_contrasena` varchar(255) NOT NULL,
   `emple_telefono` varchar(9) NOT NULL,
   `emple_direccion` varchar(100) NOT NULL,
   `emple_estado` int(11) NOT NULL DEFAULT 1,
   `emple_ndocumento` varchar(20) NOT NULL,
   `id_tipodocumento` bigint(20) NOT NULL,
-  `id_rol` bigint(20) NOT NULL
+  `id_rol` bigint(20) NOT NULL,
+  `token_reseteo` varchar(255) DEFAULT NULL,
+  `token_reseteo_expira` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `empleado`
 --
 
-INSERT INTO `empleado` (`id_empleado`, `emple_nombre`, `emple_nombreuser`, `emple_apellido_paterno`, `emple_apellido_materno`, `emple_correo`, `emple_contrasena`, `emple_telefono`, `emple_direccion`, `emple_estado`, `emple_ndocumento`, `id_tipodocumento`, `id_rol`) VALUES
-(1, 'Roger', 'admin', 'Velasco', 'Zapata', 'roger.1710@gmail.com', '$2a$10$OZuN1MJlw/01gIodlwqaQOKk.d5XhfbWAD8X2adyG9pkKtpDlVN1O', '945027855', 'Direccion Ficticia', 1, '72934888', 1, 1);
+INSERT INTO `empleado` (`id_empleado`, `emple_nombre`, `emple_nombreuser`, `emple_apellido_paterno`, `emple_apellido_materno`, `emple_correo`, `emple_contrasena`, `emple_telefono`, `emple_direccion`, `emple_estado`, `emple_ndocumento`, `id_tipodocumento`, `id_rol`, `token_reseteo`, `token_reseteo_expira`) VALUES
+(1, 'Roger', 'admin', 'Velasco', 'Zapata', 'roge@gmail.com', '$2a$10$OZuN1MJlw/01gIodlwqaQOKk.d5XhfbWAD8X2adyG9pkKtpDlVN1O', '945027855', 'Direccion Ficticia', 1, '72934888', 1, 1, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -224,7 +226,7 @@ CREATE TABLE `marca` (
 INSERT INTO `marca` (`id_marca`, `marca_nombre`, `marca_fecha`, `marca_estado`) VALUES
 (1, 'Marca01', '2025-10-13', 1),
 (2, 'Marca02', '2025-10-13', 1),
-(3, 'Marca03', '2025-10-13', 1),
+(3, 'Marca03', '2025-10-27', 1),
 (4, 'Marca04', '2025-10-13', 2);
 
 -- --------------------------------------------------------
@@ -706,7 +708,7 @@ ALTER TABLE `direccion_entrega`
 -- AUTO_INCREMENT de la tabla `empleado`
 --
 ALTER TABLE `empleado`
-  MODIFY `id_empleado` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_empleado` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `forma_pago`

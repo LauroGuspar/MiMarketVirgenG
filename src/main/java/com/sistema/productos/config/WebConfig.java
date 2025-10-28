@@ -34,8 +34,11 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns(
                         "/login",
+                        "/logueo",
                         "/logout",
                         "/cerrar-sesion",
+                        "/recuperar-clave", 
+                        "/recuperar-clave/solicitar",
                         "/css/**",
                         "/js/**",
                         "/images/**",
@@ -44,7 +47,7 @@ public class WebConfig implements WebMvcConfigurer {
                         "/error/**",
                         "/catalogo",
                         "/carrito",
-                        "/cambiar-password"
+                        "/restablecer-clave"
                 );
     }
 }
