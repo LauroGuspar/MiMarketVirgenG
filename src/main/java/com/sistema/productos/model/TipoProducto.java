@@ -9,10 +9,10 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "tipo_producto")
@@ -23,14 +23,18 @@ public class TipoProducto {
     @Column(name = "id_tipoproducto")
     private Long id;
 
-    @Column(name = "tipoproducto_nombre", nullable = false, unique = true)
+    @Column(name = "tipoproducto_nombre",length=50, nullable = false, unique = true)
     private String nombre;
 
     @Column(name = "tipoproducto_estado", nullable = false)
     private int estado = 1;
 
-    @ManyToMany(mappedBy = "tiposProducto", fetch = FetchType.LAZY)
-    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "categoria_tipo_producto",
+        joinColumns = @JoinColumn(name = "id_tipoproducto"),
+        inverseJoinColumns = @JoinColumn(name = "id_categoria")
+    )
     private Set<Categoria> categorias = new HashSet<>();
 
     public TipoProducto() {

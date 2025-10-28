@@ -1,5 +1,7 @@
 package com.sistema.productos.model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -27,8 +29,6 @@ public class Usuario {
     @Column(name="emple_nombre",nullable = false)
     private String nombre;
 
-    @NotBlank(message = "El usuario es obligatorio")
-    @Size(min = 3, max = 50, message = "El usuario debe tener entre 3 y 50 caracteres")
     @Column(name="emple_nombreuser",nullable = false, unique = true, length = 50)
     private String usuario;
 
@@ -47,7 +47,6 @@ public class Usuario {
     @Column(name="emple_correo", nullable = false, unique = true, length=60)
     private String correo;
 
-    @Size(min = 6, max=150, message = "La clave debe tener al menos 6 caracteres")
     @Column(name="emple_contrasena",nullable = false)
     private String clave;
 
@@ -77,11 +76,15 @@ public class Usuario {
     @JoinColumn(name = "id_rol")
     private Rol rol;
 
-    // Constructor por defecto
+    @Column(name = "token_reseteo", length = 255)
+    private String tokenReseteo;
+
+    @Column(name = "token_reseteo_expira")
+    private LocalDateTime tokenReseteoExpira;
+
     public Usuario() {
     }
 
-    // Constructor con parámetros
     public Usuario(String nombre, String usuario,String apellidoPaterno,String apellidoMaterno,String correo, String clave,String telefono, String direccion,String ndocumento,TipoDocumento tipodocumento, Rol rol) {
         this.nombre = nombre;
         this.usuario = usuario;
@@ -97,7 +100,6 @@ public class Usuario {
         this.rol= rol;
     }
 
-    // Getters y Setters
     public Long getId() {
         return id;
     }
@@ -200,5 +202,21 @@ public class Usuario {
 
     public void setRol(Rol rol) {
         this.rol = rol;
+    }
+
+    public String getTokenReseteo() {
+        return tokenReseteo;
+    }
+
+    public void setTokenReseteo(String tokenReseteo) {
+        this.tokenReseteo = tokenReseteo;
+    }
+
+    public LocalDateTime getTokenReseteoExpira() {
+        return tokenReseteoExpira;
+    }
+
+    public void setTokenReseteoExpira(LocalDateTime tokenReseteoExpira) {
+        this.tokenReseteoExpira = tokenReseteoExpira;
     }
 }

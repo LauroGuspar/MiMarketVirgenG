@@ -62,7 +62,6 @@ public class TipoProductoController {
     @GetMapping("/api/{id}")
     @ResponseBody
     public ResponseEntity<?> obtenerTipoProducto(@PathVariable Long id) {
-        // Llama al nuevo método del servicio que devuelve un DTO
         return tipoProductoService.obtenerTipoProductoDTOPorId(id) 
                 .map(tipoDTO -> ResponseEntity.ok(Map.of("success", true, "data", tipoDTO)))
                 .orElse(ResponseEntity.status(404).body(Map.of("success", false, "message", "Tipo de producto no encontrado")));
@@ -71,7 +70,6 @@ public class TipoProductoController {
     @PostMapping("/api/cambiar-estado/{id}")
     @ResponseBody
     public ResponseEntity<?> cambiarEstadoTipoProducto(@PathVariable Long id) {
-        // ... (sin cambios)
          Map<String, Object> response = new HashMap<>();
         boolean exito = tipoProductoService.cambiarEstadoTipoProducto(id);
         if (exito) {

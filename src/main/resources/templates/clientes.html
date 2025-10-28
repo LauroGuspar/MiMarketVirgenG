@@ -99,59 +99,11 @@
     >
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="modalTitle">Agregar Cliente</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
+          <div class="modal-header"></div>
           <div class="modal-body">
             <form id="formCliente" novalidate>
               <input type="hidden" id="id" name="id" />
               <div class="row g-3">
-                <div class="col-md-12">
-                  <label for="nombre" class="form-label">Nombre:</label>
-                  <input
-                    type="text"
-                    id="nombre"
-                    name="nombre"
-                    class="form-control"
-                  />
-                  <div id="nombre-error" class="invalid-feedback d-block"></div>
-                </div>
-                <div class="col-md-6">
-                  <label for="apellidoPaterno" class="form-label"
-                    >Apellido Paterno:</label
-                  >
-                  <input
-                    type="text"
-                    id="apellidoPaterno"
-                    name="apellidoPaterno"
-                    class="form-control"
-                  />
-                  <div
-                    id="apellidoPaterno-error"
-                    class="invalid-feedback d-block"
-                  ></div>
-                </div>
-                <div class="col-md-6">
-                  <label for="apellidoMaterno" class="form-label"
-                    >Apellido Materno:</label
-                  >
-                  <input
-                    type="text"
-                    id="apellidoMaterno"
-                    name="apellidoMaterno"
-                    class="form-control"
-                  />
-                  <div
-                    id="apellidoMaterno-error"
-                    class="invalid-feedback d-block"
-                  ></div>
-                </div>
                 <div class="col-md-6">
                   <label for="id_tipodocumento" class="form-label"
                     >Tipo Documento:</label
@@ -179,8 +131,9 @@
                     />
                     <button
                       type="button"
-                      id="btnBuscarReniec"
+                      id="btnBuscarApi"
                       class="btn btn-outline-secondary"
+                      disabled
                     >
                       <i class="bi bi-search"></i>
                     </button>
@@ -190,6 +143,112 @@
                     class="invalid-feedback d-block"
                   ></div>
                 </div>
+
+                <div id="camposPersonaNatural" style="display: none">
+                  <div class="row g-3">
+                    <div class="col-md-12">
+                      <label for="nombre" class="form-label">Nombres:</label>
+                      <input
+                        type="text"
+                        id="nombre"
+                        name="nombre"
+                        class="form-control"
+                        disabled
+                      />
+                      <div
+                        id="nombre-error"
+                        class="invalid-feedback d-block"
+                      ></div>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="apellidoPaterno" class="form-label"
+                        >Apellido Paterno:</label
+                      >
+                      <input
+                        type="text"
+                        id="apellidoPaterno"
+                        name="apellidoPaterno"
+                        class="form-control"
+                        disabled
+                      />
+                      <div
+                        id="apellidoPaterno-error"
+                        class="invalid-feedback d-block"
+                      ></div>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="apellidoMaterno" class="form-label"
+                        >Apellido Materno:</label
+                      >
+                      <input
+                        type="text"
+                        id="apellidoMaterno"
+                        name="apellidoMaterno"
+                        class="form-control"
+                        disabled
+                      />
+                      <div
+                        id="apellidoMaterno-error"
+                        class="invalid-feedback d-block"
+                      ></div>
+                    </div>
+                    <div class="col-12">
+                      <label for="direccion" class="form-label"
+                        >Dirección Personal:</label
+                      >
+                      <input
+                        type="text"
+                        id="direccion"
+                        name="direccion"
+                        placeholder="Avenida Siempre Viva #123"
+                        class="form-control"
+                        disabled
+                      />
+                      <div
+                        id="direccion-error"
+                        class="invalid-feedback d-block"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="camposEmpresa" style="display: none">
+                  <div class="row g-3">
+                    <div class="col-md-12">
+                      <label for="nombreEmpresa" class="form-label"
+                        >Razón Social:</label
+                      >
+                      <input
+                        type="text"
+                        id="nombreEmpresa"
+                        name="nombreEmpresa"
+                        class="form-control"
+                        disabled
+                      />
+                      <div
+                        id="nombreEmpresa-error"
+                        class="invalid-feedback d-block"
+                      ></div>
+                    </div>
+                    <div class="col-12">
+                      <label for="direccionEmpresa" class="form-label"
+                        >Dirección Empresa:</label
+                      >
+                      <input
+                        type="text"
+                        id="direccionEmpresa"
+                        name="direccionEmpresa"
+                        class="form-control"
+                        disabled
+                      />
+                      <div
+                        id="direccionEmpresa-error"
+                        class="invalid-feedback d-block"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+
                 <div class="col-md-6">
                   <label for="correo" class="form-label"
                     >Correo Electrónico:</label
@@ -219,23 +278,10 @@
                     class="invalid-feedback d-block"
                   ></div>
                 </div>
-                <div class="col-12">
-                  <label for="direccion" class="form-label">Dirección:</label>
-                  <input
-                    type="text"
-                    id="direccion"
-                    name="direccion"
-                    placeholder="Avenida Siempre Viva #123"
-                    class="form-control"
-                  />
-                  <div
-                    id="direccion-error"
-                    class="invalid-feedback d-block"
-                  ></div>
-                </div>
               </div>
             </form>
           </div>
+
           <div class="modal-footer">
             <button
               type="button"

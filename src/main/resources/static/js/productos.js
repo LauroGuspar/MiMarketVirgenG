@@ -13,7 +13,8 @@ $(document).ready(function () {
         toggleStatus: (id) => `${API_BASE}/cambiar-estado/${id}`,
         categorias: `${API_BASE}/categorias`,
         marcas: `${API_BASE}/marcas`,
-        unidades: `${API_BASE}/unidades`
+        unidades: `${API_BASE}/unidades`,
+        tiposPorCategoria: (id) => `${API_BASE}/tipos-producto/por-categoria/${id}`
     };
 
     function initializeDataTable() {
@@ -32,9 +33,11 @@ $(document).ready(function () {
                 { data: 'nombre', title: 'Nombre' },
                 { data: 'codigo', title: 'Código' },
                 { data: 'categoria.nombre', title: 'Categoría' },
+                { data: 'tipoProducto.nombre', title: 'Tipo Prod.' },
                 { data: 'marca.nombre', title: 'Marca' },
                 { data: 'descripcion', title: 'Descripción' },
                 { data: 'precio', title: 'Precio', render: data => `S/ ${parseFloat(data || 0).toFixed(2)}` },
+                { data: 'stock', title: 'Stock' },
                 { data: 'stockMinimo', title: 'Stock Mín.' },
                 { data: 'unidad.nombre', title: 'Unidad' },
                 { data: 'fechaCreacion', title: 'Fec. Creación' },
@@ -52,11 +55,31 @@ $(document).ready(function () {
 
             columnDefs: [
                 {
-                    targets: [3, 5, 6, 9, 10, 11, 12],
+                    targets: [6, 8, 11, 12, 13],
                     visible: false
                 }
             ],
-            language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json" },
+            language: {
+                "processing": "Procesando...",
+                "lengthMenu": "Mostrar _MENU_ registros",
+                "zeroRecords": "No se encontraron resultados",
+                "emptyTable": "Ningún dato disponible en esta tabla",
+                "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                "infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                "infoFiltered": "(filtrado de un total de _MAX_ registros)",
+                "search": "Buscar:",
+                "loadingRecords": "Cargando...",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                },
+                "aria": {
+                    "sortAscending": ": Activar para ordenar la columna de manera ascendente",
+                    "sortDescending": ": Activar para ordenar la columna de manera descendente"
+                }
+            },
             dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
                 "<'row'<'col-sm-12'tr>>" +
                 "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>" +
@@ -64,7 +87,7 @@ $(document).ready(function () {
             buttons: [
                 {
                     extend: 'colvis',
-                    text: '👁️ Mostrar / Ocultar Columnas',
+                    text: 'Mostrar / Ocultar Columnas',
                     className: 'btn btn-outline-secondary'
                 }
             ]
@@ -81,6 +104,36 @@ $(document).ready(function () {
                     select.append(`<option value="${item.id}">${item.nombre}</option>`);
                 });
             });
+    }
+
+    function loadTiposProducto(idCategoria, tipoProductoSeleccionadoId = null) {
+        const $selectTipoProducto = $('#tipoProducto');
+
+        if (!idCategoria) {
+            $selectTipoProducto.empty().append('<option value="">Seleccione una categoría primero</option>').prop('disabled', true);
+            return;
+        }
+
+        AppUtils.showLoading(true);
+        fetch(ENDPOINTS.tiposPorCategoria(idCategoria))
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.data) {
+                    $selectTipoProducto.empty().append('<option value="" disabled selected>Seleccione un Tipo</option>').prop('disabled', false);
+                    data.data.forEach(tipo => {
+                        $selectTipoProducto.append(new Option(tipo.nombre, tipo.id));
+                    });
+                    if (tipoProductoSeleccionadoId) {
+                        $selectTipoProducto.val(tipoProductoSeleccionadoId);
+                    }
+                } else {
+                    $selectTipoProducto.empty().append('<option value="">No hay tipos para esta categoría</option>').prop('disabled', true);
+                }
+            })
+            .catch(() => {
+                $selectTipoProducto.empty().append('<option value="">Error al cargar</option>').prop('disabled', true);
+            })
+            .finally(() => AppUtils.showLoading(false));
     }
 
     function setupEventListeners() {
@@ -100,6 +153,11 @@ $(document).ready(function () {
                 reader.readAsDataURL(this.files[0]);
             }
         });
+
+        $('#categoria').on('change', function () {
+            const idCategoria = $(this).val();
+            loadTiposProducto(idCategoria);
+        });
     }
 
     function saveProducto() {
@@ -112,18 +170,17 @@ $(document).ready(function () {
             stockMinimo: $('#stockMinimo').val(),
             fechaVencimiento: $('#fechaVencimiento').val() || null,
             categoria: { id: $('#categoria').val() },
+            tipoProducto: { id: $('#tipoProducto').val() },
             marca: { id: $('#marca').val() },
             unidad: { id: $('#unidad').val() }
         };
 
         const formData = new FormData();
         const imagenFile = $('#imagenFile')[0].files[0];
-
         formData.append('producto', JSON.stringify(producto));
         if (imagenFile) {
             formData.append('imagenFile', imagenFile);
         }
-
         AppUtils.showLoading(true);
         fetch(ENDPOINTS.save, {
             method: 'POST',
@@ -211,6 +268,7 @@ $(document).ready(function () {
         $('#modalTitle').text('Nuevo Producto');
         $('#imagenPreview').attr('src', '/images/placeholder.png').show();
         $('#imagenFile').val('');
+        $('#tipoProducto').empty().append('<option value="">Seleccione una categoría primero</option>').prop('disabled', true);
         productoModal.show();
     }
 
@@ -231,6 +289,9 @@ $(document).ready(function () {
         $('#marca').val(producto.marca.id);
         $('#unidad').val(producto.unidad.id);
 
+        const tipoProductoId = producto.tipoProducto ? producto.tipoProducto.id : null;
+        loadTiposProducto(producto.categoria.id, tipoProductoId);
+
         const imageUrl = producto.imagen ? `/productos/${producto.imagen}` : '/images/placeholder.png';
         $('#imagenPreview').attr('src', imageUrl).show();
         $('#imagenFile').val('');
@@ -238,7 +299,6 @@ $(document).ready(function () {
         productoModal.show();
     }
 
-    // --- Inicialización ---
     initializeDataTable();
     setupEventListeners();
     loadSelectOptions(`${API_BASE}/categorias`, '#categoria', 'Seleccione una Categoría');

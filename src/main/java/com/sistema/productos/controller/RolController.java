@@ -111,13 +111,6 @@ public class RolController {
     public ResponseEntity<?> eliminarRol(@PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
         try {
-            // Opcional: Añadir validación para no poder eliminar roles en uso.
-            // if (usuarioService.existeUsuarioConRol(id)) {
-            // response.put("success", false);
-            // response.put("message", "No se puede eliminar el rol porque está asignado
-            // a uno o más usuarios.");
-            // return ResponseEntity.badRequest().body(response);
-            // }
             rolService.eliminarRol(id);
             response.put("success", true);
             response.put("message", "Rol eliminado correctamente");

@@ -15,7 +15,7 @@ public class WebConfig implements WebMvcConfigurer {
     }
     @Override
     public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/css/**")
+         registry.addResourceHandler("/css/**")
                 .addResourceLocations("classpath:/static/css/")
                 .setCachePeriod(0);
         registry.addResourceHandler("/js/**")
@@ -24,17 +24,30 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("classpath:/static/images/")
                 .setCachePeriod(0);
+        registry.addResourceHandler("/webjars/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 
     @Override
     public void addInterceptors(@NonNull InterceptorRegistry registry) {
         registry.addInterceptor(sessionInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/login", "/logout",
-                        "/css/**", "/js/**", "/images/**",
-                        "/error", "/favicon.ico",
-                        "/logueo", "/cerrar-sesion",
-                        "/catalogo", "/carrito", "/cambiar-password"
+                .excludePathPatterns(
+                        "/login",
+                        "/logueo",
+                        "/logout",
+                        "/cerrar-sesion",
+                        "/recuperar-clave", 
+                        "/recuperar-clave/solicitar",
+                        "/css/**",
+                        "/js/**",
+                        "/images/**",
+                        "/webjars/**",
+                        "/favicon.ico",
+                        "/error/**",
+                        "/catalogo",
+                        "/carrito",
+                        "/restablecer-clave"
                 );
     }
 }

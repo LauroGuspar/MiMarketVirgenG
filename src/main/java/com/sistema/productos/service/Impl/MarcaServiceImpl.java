@@ -57,8 +57,7 @@ public class MarcaServiceImpl implements MarcaService {
     @Override
     @Transactional
     public void eliminarMarca(Long id) {
-        Marca marca = marcaRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Marca no encontrada con ID: " + id));
+        Marca marca = marcaRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Marca no encontrada con ID: " + id));
         marca.setEstado(2);
         marcaRepository.save(marca);
     }
@@ -70,6 +69,7 @@ public class MarcaServiceImpl implements MarcaService {
         if (marcaOpt.isEmpty()) {
             return false;
         }
+        
         Marca marca = marcaOpt.get();
         if (marca.getEstado() == 1) {
             marcaRepository.actualizarEstado(id, 0);

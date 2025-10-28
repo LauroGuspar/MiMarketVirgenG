@@ -5,9 +5,7 @@ $(document).ready(function () {
     const formId = '#formUsuario';
 
     const ValidacionTDocumento = {
-        'DNI': { length: 8, message: 'El DNI debe tener 8 dígitos.' },
-        'RUC': { length: 11, message: 'El RUC debe tener 11 dígitos.' },
-        'Carné de Extranjería': { length: 20, message: 'El Carné de Extranjería debe tener como máximo 20 caracteres.' }
+        'DNI': { length: 8, message: 'El DNI debe tener 8 dígitos.' }
     };
 
     const API_BASE = '/empleados/api';
@@ -19,6 +17,7 @@ $(document).ready(function () {
         roles: `${API_BASE}/roles`,
         tiposDocumento: `${API_BASE}/tipodocumento`,
         toggleStatus: (id) => `${API_BASE}/cambiar-estado/${id}`,
+        buscarReniec: (dni) => `/reniec/api/buscar-dni/${dni}`,
     };
 
     initializeDataTable();
@@ -45,7 +44,27 @@ $(document).ready(function () {
                     render: (data, type, row) => AppUtils.createActionButtons(row)
                 }
             ],
-            language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json" }
+            language: {
+                "processing": "Procesando...",
+                "lengthMenu": "Mostrar _MENU_ registros",
+                "zeroRecords": "No se encontraron resultados",
+                "emptyTable": "Ningún dato disponible en esta tabla",
+                "info": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                "infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                "infoFiltered": "(filtrado de un total de _MAX_ registros)",
+                "search": "Buscar:",
+                "loadingRecords": "Cargando...",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                },
+                "aria": {
+                    "sortAscending": ": Activar para ordenar la columna de manera ascendente",
+                    "sortDescending": ": Activar para ordenar la columna de manera descendente"
+                }
+            }
         });
     }
 
@@ -57,7 +76,7 @@ $(document).ready(function () {
         $('#tablaUsuarios tbody').on('click', '.action-delete', handleDelete);
 
         $('#id_tipodocumento').on('change', function () {
-            const selectedText = $(this).find('option:selected').text();
+            const selectedText = 'DNI';
             const ndocumentoInput = $('#ndocumento');
             const rule = ValidacionTDocumento[selectedText];
 
@@ -66,14 +85,7 @@ $(document).ready(function () {
                 ndocumentoInput.attr('placeholder', `${rule.length} dígitos`);
                 ndocumentoInput.data('expected-length', rule.length);
                 ndocumentoInput.data('validation-message', rule.message);
-            } else {
-                ndocumentoInput.removeAttr('maxlength');
-                ndocumentoInput.attr('placeholder', 'N° de Documento');
-                ndocumentoInput.removeData('expected-length');
-                ndocumentoInput.removeData('validation-message');
             }
-            ndocumentoInput.val('');
-            validarNumeroDocumento();
         });
 
         $('#ndocumento').on('input', function () {
@@ -83,6 +95,50 @@ $(document).ready(function () {
         $('#telefono').on('input', function () {
             this.value = this.value.replace(/[^0-9]/g, '');
             validarTelefono();
+        });
+
+        $('#btnBuscarReniec').on('click', async function () {
+            const dni = $('#ndocumento').val().trim();
+            const selectedText = $('#id_tipodocumento').find('option:selected').text();
+
+            if (selectedText !== 'DNI' || dni.length !== 8) {
+                Swal.fire('Advertencia', 'Ingrese un DNI válido de 8 dígitos', 'warning');
+                return;
+            }
+
+            try {
+                AppUtils.showLoading(true);
+                const response = await fetch(ENDPOINTS.buscarReniec(dni));
+                const result = await response.json();
+
+                if (result.success && result.data && result.data.datos) {
+                    const datos = result.data.datos;
+
+                    $('#nombre').val(datos.nombres || '');
+                    $('#apellidoPaterno').val(datos.ape_paterno || '');
+                    $('#apellidoMaterno').val(datos.ape_materno || '');
+
+                    if (datos.domiciliado) {
+                        const d = datos.domiciliado;
+                        const direccionCompleta = [d.direccion, d.distrito, d.provincia, d.departamento]
+                            .filter(Boolean)
+                            .join(', ');
+                        $('#direccion').val(direccionCompleta);
+                    }
+                    $('#nombre').prop('disabled', true);
+                    $('#apellidoPaterno').prop('disabled', true);
+                    $('#apellidoMaterno').prop('disabled', true);
+                    $('#direccion').prop('disabled', true);
+                } else {
+                    Swal.fire('No encontrado', result.message || 'No se encontraron datos para este DNI', 'info');
+                    $('#nombre, #apellidoPaterno, #apellidoMaterno, #direccion').val('').prop('disabled', true);
+                }
+            } catch (error) {
+                console.error('Error al buscar en RENIEC:', error);
+                Swal.fire('Error', 'No se pudo conectar al servicio RENIEC', 'error');
+            } finally {
+                AppUtils.showLoading(false);
+            }
         });
     }
 
@@ -138,37 +194,37 @@ $(document).ready(function () {
     }
 
     function loadTiposDocumento() {
-        fetch(ENDPOINTS.tiposDocumento)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const select = $('#id_tipodocumento');
-                    select.empty().append('<option value="" disabled selected>Selecciona un Tipo</option>');
-                    data.data.forEach(doc => select.append(`<option value="${doc.id}">${doc.nombre}</option>`));
-                } else { AppUtils.showNotification('Error al cargar tipos de documento', 'error'); }
-            }).catch(error => console.error('Error cargando tipos de documento:', error));
+        const select = $('#id_tipodocumento');
+        select.empty();
+        select.append('<option value="1" selected>DNI</option>');
+        select.trigger('change');
     }
 
     function saveUsuario() {
         const isDocumentoValid = validarNumeroDocumento();
         const isTelefonoValid = validarTelefono();
 
-        if (!isDocumentoValid || !isTelefonoValid) {
-            AppUtils.showNotification('Por favor, corrige los errores en el formulario.', 'error');
+        if (!isDocumentoValid || (!isTelefonoValid && $('#telefono').val())) {
+            if (!isDocumentoValid) {
+                AppUtils.showNotification('El número de documento no es válido.', 'error');
+            } else {
+                AppUtils.showNotification('El número de teléfono no es válido.', 'error');
+            }
             return;
         }
 
         const formData = {
-            id: $('#id').val() || null, nombre: $('#nombre').val().trim(),
-            usuario: $('#usuario').val().trim(), apellidoPaterno: $('#apellidoPaterno').val().trim(),
-            apellidoMaterno: $('#apellidoMaterno').val().trim(), correo: $('#correo').val().trim(),
-            telefono: $('#telefono').val().trim(), direccion: $('#direccion').val().trim(),
-            ndocumento: $('#ndocumento').val().trim(), clave: $('#clave').val(),
+            id: $('#id').val() || null,
+            nombre: $('#nombre').val().trim(),
+            apellidoPaterno: $('#apellidoPaterno').val().trim(),
+            apellidoMaterno: $('#apellidoMaterno').val().trim(),
+            direccion: $('#direccion').val().trim(),
+            ndocumento: $('#ndocumento').val().trim(),
             tipodocumento: { id: $('#id_tipodocumento').val() },
+            correo: $('#correo').val().trim(),
+            telefono: $('#telefono').val().trim(),
             rol: { id: $('#id_rol').val() }
         };
-
-        if (isEditing && !formData.clave) { delete formData.clave; }
 
         AppUtils.showLoading(true);
         fetch(ENDPOINTS.save, {
@@ -184,10 +240,13 @@ $(document).ready(function () {
                 } else {
                     if (data.errors) {
                         Object.keys(data.errors).forEach(field => $(`#${field}-error`).text(data.errors[field]));
-                    } else { AppUtils.showNotification(data.message, 'error'); }
+                        AppUtils.showNotification('Datos inválidos.', 'error');
+                    } else {
+                        AppUtils.showNotification(data.message, 'error');
+                    }
                 }
             })
-            .catch(error => AppUtils.showNotification('Error de conexión', 'error'))
+            .catch(error => AppUtils.showNotification('Error de conexión al guardar.', 'error'))
             .finally(() => AppUtils.showLoading(false));
     }
 
@@ -197,8 +256,9 @@ $(document).ready(function () {
         fetch(ENDPOINTS.get(id))
             .then(response => response.json())
             .then(data => {
-                if (data.success) { openModalForEdit(data.data); }
-                else { AppUtils.showNotification('Error al cargar usuario', 'error'); }
+                if (data.success) {
+                    openModalForEdit(data.data);
+                } else { AppUtils.showNotification('Error al cargar usuario', 'error'); }
             })
             .catch(error => AppUtils.showNotification('Error de conexión', 'error'))
             .finally(() => AppUtils.showLoading(false));
@@ -241,37 +301,48 @@ $(document).ready(function () {
     function openModalForNew() {
         isEditing = false;
         AppUtils.clearForm(formId);
-        const ndocumentoInput = $('#ndocumento');
-        ndocumentoInput.removeAttr('maxlength');
-        ndocumentoInput.attr('placeholder', 'N° de Documento');
-        ndocumentoInput.removeData('expected-length');
-        ndocumentoInput.removeData('validation-message');
-
         $('#modalTitle').text('Agregar Usuario');
+        $('#id_tipodocumento').prop('disabled', false);
+        $('#ndocumento').prop('disabled', false);
+        $('#btnBuscarReniec').prop('disabled', false);
+        $('#correo').prop('disabled', false);
+        $('#telefono').prop('disabled', false);
+        $('#id_rol').prop('disabled', false);
+        $('#nombre').prop('disabled', true);
+        $('#apellidoPaterno').prop('disabled', true);
+        $('#apellidoMaterno').prop('disabled', true);
+        $('#direccion').prop('disabled', true);
+        $('#id_tipodocumento').val('1').trigger('change');
+        $('#ndocumento').attr('placeholder', '8 dígitos');
+
         usuarioModal.show();
     }
 
-    function openModalForEdit(usuario) {
+    function openModalForEdit(usuarioDTO) {
         isEditing = true;
-        AppUtils.clearForm(formId);
+        AppUtils.clearForm(formId)
         $('#modalTitle').text('Editar Usuario');
+        $('#id').val(usuarioDTO.id);
+        $('#nombre').val(usuarioDTO.nombre);
+        $('#apellidoPaterno').val(usuarioDTO.apellidoPaterno);
+        $('#apellidoMaterno').val(usuarioDTO.apellidoMaterno);
+        $('#correo').val(usuarioDTO.correo);
+        $('#telefono').val(usuarioDTO.telefono);
+        $('#direccion').val(usuarioDTO.direccion);
+        $('#ndocumento').val(usuarioDTO.ndocumento);
+        $('#id_rol').val(usuarioDTO.id_rol);
+        $('#id_tipodocumento').val('1');
+        $('#id_tipodocumento').prop('disabled', true);
+        $('#ndocumento').prop('disabled', true);
+        $('#btnBuscarReniec').prop('disabled', true);
+        $('#nombre').prop('disabled', true);
+        $('#apellidoPaterno').prop('disabled', true);
+        $('#apellidoMaterno').prop('disabled', true);
+        $('#direccion').prop('disabled', true);
+        $('#correo').prop('disabled', false);
+        $('#telefono').prop('disabled', false);
+        $('#id_rol').prop('disabled', false);
 
-        $('#id').val(usuario.id);
-        $('#nombre').val(usuario.nombre);
-        $('#usuario').val(usuario.usuario);
-        $('#apellidoPaterno').val(usuario.apellidoPaterno);
-        $('#apellidoMaterno').val(usuario.apellidoMaterno);
-        $('#correo').val(usuario.correo);
-        $('#telefono').val(usuario.telefono);
-        $('#direccion').val(usuario.direccion);
-        $('#ndocumento').val(usuario.ndocumento);
-        $('#id_rol').val(usuario.rol ? usuario.rol.id : '');
-        $('#clave').attr('placeholder', 'Dejar en blanco para no cambiar');
-
-        if (usuario.tipodocumento) {
-            $('#id_tipodocumento').val(usuario.tipodocumento.id).trigger('change');
-            $('#ndocumento').val(usuario.ndocumento);
-        }
         usuarioModal.show();
     }
 });

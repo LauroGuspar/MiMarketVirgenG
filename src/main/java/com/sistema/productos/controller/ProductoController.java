@@ -1,6 +1,7 @@
 package com.sistema.productos.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -16,8 +17,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sistema.productos.model.Producto;
+import com.sistema.productos.model.TipoProducto;
 import com.sistema.productos.repository.CategoriaRepository;
 import com.sistema.productos.repository.MarcaRepository;
+import com.sistema.productos.repository.TipoProductoRepository;
 import com.sistema.productos.repository.UnidadRepository;
 import com.sistema.productos.service.ProductoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,12 +34,14 @@ public class ProductoController {
     private final CategoriaRepository categoriaRepository;
     private final MarcaRepository marcaRepository;
     private final UnidadRepository unidadRepository;
+    private final TipoProductoRepository tipoProductoRepository;
 
-    public ProductoController(ProductoService productoService, CategoriaRepository categoriaRepository, MarcaRepository marcaRepository, UnidadRepository unidadRepository) {
+    public ProductoController(ProductoService productoService, CategoriaRepository categoriaRepository, MarcaRepository marcaRepository, UnidadRepository unidadRepository,TipoProductoRepository tipoProductoRepository) {
         this.productoService = productoService;
         this.categoriaRepository = categoriaRepository;
         this.marcaRepository = marcaRepository;
         this.unidadRepository = unidadRepository;
+        this.tipoProductoRepository = tipoProductoRepository;
     }
 
     @GetMapping("/listar")
@@ -134,5 +139,12 @@ public class ProductoController {
             response.put("message", "Error al eliminar la categoría: " + e.getMessage());
             return ResponseEntity.internalServerError().body(response);
         }
+    }
+
+    @GetMapping("/api/tipos-producto/por-categoria/{idCategoria}")
+    @ResponseBody
+    public ResponseEntity<?> listarTiposProductoPorCategoria(@PathVariable Long idCategoria) {
+        List<TipoProducto> tipos = tipoProductoRepository.findByCategorias_IdAndEstadoNot(idCategoria, 2); 
+        return ResponseEntity.ok(Map.of("success", true, "data", tipos));
     }
 }

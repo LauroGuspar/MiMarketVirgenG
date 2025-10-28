@@ -1,10 +1,17 @@
 package com.sistema.productos.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -24,6 +31,10 @@ public class Opcion {
 
     @Column(name="opcion_icon", length=100)
     private String icon;
+
+    @ManyToMany(mappedBy = "opciones", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Set<Rol> roles = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -56,5 +67,25 @@ public class Opcion {
     public void setIcon(String icon) {
         this.icon = icon;
     }
-    
+
+    public Set<Rol> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Rol> roles) {
+        this.roles = roles;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Opcion opcion = (Opcion) o;
+        return id != null && id.equals(opcion.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
